@@ -1,0 +1,53 @@
+version: '3.8'
+
+volumes:
+  jfapp-db:
+  jfapp-app:
+  jfapp-uploads:
+
+services:
+  jfapp-db:
+    image: postgres:15
+    container_name: jfapp-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - jfapp-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  jfapp-web:
+    container_name: jfapp-web
+    restart: always
+    build: ./web
+    ports:
+      - "2124:5000"
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - SECRET_KEY=${SECRET_KEY}
+      - FLASK_ENV=development
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - SMTP_TLS=${SMTP_TLS}
+      - SMTP_SSL=${SMTP_SSL}
+      - FROM_EMAIL=${FROM_EMAIL}
+      - SMTP_TIMEOUT=${SMTP_TIMEOUT}
+      - APP_BASE_URL=${APP_BASE_URL}
+      - SEND_TEST_MAIL=${SEND_TEST_MAIL}
+    volumes:
+      - jfapp-app:/app
+      - jfapp-uploads:/app/uploads
+    depends_on:
+      jfapp-db:
+        condition: service_healthy

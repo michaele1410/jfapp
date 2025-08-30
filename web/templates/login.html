@@ -1,0 +1,47 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h1 class="h4 mb-3">{{ _('Anmeldung') }}</h1>
+
+        <!-- Flash-Messages -->
+        <!--{% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message|safe }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        
+       {% if current_user() and current_user().get('username') == 'admin' and current_user().get('must_change_password') and not current_user().get('last_login_at') %}
+        <div class="alert alert-warning d-flex align-items-center" role="alert">
+          <i class="bi-exclamation-triangle-fill me-2"></i>
+          <div>
+            Standard-Login: Benutzername <strong>"admin"</strong> und Passwort <strong>"admin"</strong> – bitte sofort ändern!
+          </div>
+        </div>
+        {% endif %}-->
+ 
+        <form method="post" action="{{ url_for('auth_routes.login') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="mb-3">
+            <label class="form-label">{{ _('Benutzername') }}</label>
+            <input name="username" class="form-control" autocomplete="username" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">{{ _('Passwort') }}</label>
+            <input type="password" name="password" class="form-control" autocomplete="current-password" required>
+          </div>
+          <button class="btn btn-primary w-100">{{ _('Login') }}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

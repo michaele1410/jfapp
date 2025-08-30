@@ -1,0 +1,628 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="row g-3 mb-4">
+  <!-- Formular für neuen Datensatz -->
+
+  {% if can_add %}
+  <div class="col-12 col-md-4">
+    <div class="card shadow-sm h-100">
+      <div class="card-body">
+        <h2 class="h6 mb-3">{{ _('Neuen Dienst hinzufügen') }}</h2>
+        <form method="post" action="{{ url_for('bbalance_routes.add') }}" id="transaction-form" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <!-- Datum -->
+          <div class="form-floating mb-3">
+            <input type="text" name="datum" id="datum" class="form-control" placeholder="Datum"
+              value="{{ default_date }}" required autofocus>
+            <label for="datum">{{ _('Datum') }}</label>
+          </div>
+          
+          <!-- Titel -->
+          <div class="input-group mb-3">
+            <span class="input-group-text">{{ _('Titel') }}</span>
+            <div class="form-floating flex-grow-1">
+              <input name="titel" type="text" class="form-control" id="titel" autocomplete="off">
+              <label for="titel">{{ _('Titel') }}</label>
+            </div>
+          </div>
+
+          <div class="input-group mb-3">
+            <span class="input-group-text">{{ _('Bemerkung') }}</span>
+            <div class="form-floating flex-grow-1">
+              <input name="bemerkung" type="text" class="form-control" id="bemerkung" autocomplete="off">
+              <label for="bemerkung">{{ _('Bemerkung') }}</label>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <!-- Hinzufügen -->
+            <button type="submit" class="btn btn-success flex-grow-1" disabled>
+              <i class="bi-plus-lg me-1"></i> {{ _('Hinzufügen') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Tabelle -->
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+      <h2 class="h5 m-0">{{ _('Dienste') }}</h2>
+
+      <div class="w-100">
+        <form method="get" class="row row-cols-1 row-cols-md-auto g-2 align-items-end form-compact" id="filtersForm"
+          aria-label="{{ _('Filter für Dienste') }}">
+
+          {# Suche #}
+          <div class="col">
+            <label for="filter_q" class="form-label mb-1">{{ _('Suche') }}</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi-search"></i></span>
+              <input type="text" id="filter_q" name="q" class="form-control" placeholder="{{ _('Datum/Titel') }}"
+                value="{{ request.args.get('q','') }}" autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Zeitraum (Date Range Picker) -->
+          <div class="col">
+            <label for="filter_daterange" class="form-label mb-1">{{ _('Zeitraum') }}</label>
+            <input type="text" id="filter_daterange" class="form-control"
+              placeholder="{{ _('TT.MM.JJJJ – TT.MM.JJJJ') }}" autocomplete="off">
+            <input type="hidden" name="from" id="filter_from" value="{{ request.args.get('from','') }}">
+            <input type="hidden" name="to" id="filter_to" value="{{ request.args.get('to','') }}">
+          </div>
+
+          {# Aktionen links: Filtern / Zurücksetzen #}
+          <div class="col d-flex gap-2">
+            <button class="btn btn-primary" type="submit">
+              <i class="bi-funnel me-1"></i> {{ _('Filtern') }}
+            </button>
+            <a class="btn btn-outline-secondary" href="{{ url_for('bbalance_routes.index') }}">
+              <i class="bi-x-circle me-1"></i> {{ _('Zurücksetzen') }}
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tabelle -->
+    <div class="table-responsive">
+      <table class="table table-sm align-middle table-striped">
+        <thead class="table-light">
+          <tr>
+            <th style="cursor:pointer;" onclick="sortTableByDate()">{{ _('Datum') }}<i class="bi bi-arrow-down-up"></i>
+            </th>
+            <th>{{ _('Titel') }}</th>
+            <th>{{ _('Bemerkung') }}</th>
+            <th>Anwesend</th>
+            <th>Entschuldigt</th>
+            <th>Unentschuldigt</th>
+
+            <th class="text-end">{{ _('Aktionen') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for e in entries %}
+          <tr>
+            <td>{{ format_date_de(e.datum) }}</td>
+            <td>{{ e.titel }}</td>
+            <td>{{ e.bemerkung }}</td>
+            <td>{{ e.a }}</td>
+            <td>{{ e.e }}</td>
+            <td>{{ e.u }}</td>
+
+            <td class="text-end">
+              <!-- Bearbeiten -->
+              <a class="btn btn-sm btn-outline-primary" href="{{ url_for('bbalance_routes.edit', entry_id=e.id) }}"
+                title="{{ _('Bearbeiten') }}">
+                <i class="bi-pencil-square"></i>
+              </a>
+
+              <!-- Löschen -->
+              <form method="post" action="{{ url_for('bbalance_routes.delete', entry_id=e.id) }}" class="d-inline"
+                onsubmit="return confirm('{{ _('Eintrag wirklich löschen?') }}');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-sm btn-outline-danger" title="{{ _('Löschen') }}">
+                  <i class="bi-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="text-center text-muted">{{ _('Keine Einträge vorhanden.') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function showToast(message, variant = 'danger') {
+    // variant: 'primary'|'success'|'warning'|'danger'|...
+    const container = document.getElementById('bbToastContainer');
+    if (!container) return alert(message); // Fallback
+
+    const toastEl = document.createElement('div');
+    toastEl.className = `toast align-items-center text-bg-${variant} border-0`;
+    toastEl.setAttribute('role', 'alert');
+    toastEl.setAttribute('aria-live', 'assertive');
+    toastEl.setAttribute('aria-atomic', 'true');
+    toastEl.innerHTML = `
+    <div class="d-flex">
+      <div class="toast-body">${message}</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>`;
+    container.appendChild(toastEl);
+    const toast = new bootstrap.Toast(toastEl, { delay: 4000 });
+    toast.show();
+    toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove());
+  }
+
+
+  (function () {
+    // Daten aus Flask
+    const labelsRaw = {{ entries| map(attribute = 'datum') | list | tojson
+  }};
+  const dataInv = {{ series_inv| tojson }};
+  const dataKas = {{ series_kas| tojson }};
+
+  const labels = labelsRaw.map(d => {
+    try { return new Date(d).toLocaleDateString('de-DE'); } catch { return String(d); }
+  });
+
+  const css = getComputedStyle(document.documentElement);
+  const colorPrimary = (css.getPropertyValue('--bs-primary') || '#0d6efd').trim();
+  const colorSuccess = (css.getPropertyValue('--bs-success') || '#198754').trim();
+  const gridColor = (css.getPropertyValue('--bs-border-color') || '#dee2e6').trim();
+
+  const baseOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { intersect: false, mode: 'index' },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          title: (items) => items[0]?.label ?? '',
+          label: (ctx) => {
+            const val = ctx.parsed.y;
+            if (ctx.dataset.label === 'Kassenbestand') {
+              return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(val);
+            }
+            return `${val} {{ _('Flaschen') }}`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: { display: false, grid: { display: false } },
+      y: { display: false, grid: { color: gridColor } }
+    }
+  };
+
+  function makeGradient(ctx, baseColor) {
+    const g = ctx.createLinearGradient(0, 0, 0, ctx.canvas.height || 80);
+    g.addColorStop(0, baseColor + '33');
+    g.addColorStop(1, baseColor + '00');
+    return g;
+  }
+
+  const invCanvas = document.getElementById('sparklineInv');
+  if (invCanvas && window.Chart) {
+    const invCtx = invCanvas.getContext('2d');
+    new Chart(invCtx, {
+      type: 'line',
+      data: { labels, datasets: [{ label: 'Inventar', data: dataInv, borderColor: colorPrimary, backgroundColor: makeGradient(invCtx, colorPrimary), borderWidth: 2, fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: colorPrimary }] },
+      options: baseOptions
+    });
+  }
+
+  const kasCanvas = document.getElementById('sparklineKas');
+  if (kasCanvas && window.Chart) {
+    const kasCtx = kasCanvas.getContext('2d');
+    new Chart(kasCtx, {
+      type: 'line',
+      data: { labels, datasets: [{ label: 'Kassenbestand', data: dataKas, borderColor: colorSuccess, backgroundColor: makeGradient(kasCtx, colorSuccess), borderWidth: 2, fill: true, tension: 0.35, pointRadius: 3, pointBackgroundColor: colorSuccess }] },
+      options: baseOptions
+    });
+  }
+}) ();
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('transaction-form');
+    const orderIds = ['datum', 'vollgut', 'leergut', 'einnahme', 'ausgabe', 'bemerkung'];
+    const fields = orderIds.map(id => document.getElementById(id) || form?.querySelector(`[name="${id}"]`)).filter(Boolean);
+
+    // Auto-Tab
+    function focusByOffset(currentEl, delta) {
+      const idx = Number(currentEl?.dataset?.idx ?? -1);
+      if (idx < 0) return;
+      const next = fields[idx + delta];
+      if (next) next.focus({ preventScroll: true });
+    }
+    fields.forEach((el, idx) => {
+      el.dataset.idx = idx;
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          focusByOffset(el, e.shiftKey ? -1 : 1);
+        }
+      });
+      if (el.type === 'number') el.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+    });
+
+    // Flatpickr
+    function isDark() { return document.documentElement.getAttribute('data-bs-theme') === 'dark'; }
+    function toggleCalendarDark(calEl, dark) { if (calEl) calEl.classList.toggle('flatpickr-dark', !!dark); }
+    if (window.flatpickr) {
+      if (flatpickr.l10ns?.de) flatpickr.localize(flatpickr.l10ns.de);
+      const fp = flatpickr('#datum', {
+        allowInput: true, dateFormat: 'd.m.Y', clickOpens: true, disableMobile: false,
+        onClose: () => focusByOffset(document.getElementById('datum'), 1),
+        onOpen: (s, d, i) => toggleCalendarDark(i.calendarContainer, isDark())
+      });
+      new MutationObserver(() => {
+        const dark = isDark();
+        document.querySelectorAll('.flatpickr-calendar').forEach(c => toggleCalendarDark(c, dark));
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+    }
+
+    // Haptik
+    function hapticFeedback() { if (navigator.vibrate) navigator.vibrate(10); }
+    form?.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('focus', hapticFeedback));
+
+    // Pflichtfelder-Gruppe
+    const feldIds = ['titel', 'bemerkung'];
+    const felder = feldIds.map(id => document.getElementById(id)).filter(Boolean);
+    function getNumericValue(el) {
+      const raw = (el?.value ?? '').toString().trim().replace(',', '.');
+      const val = parseFloat(raw);
+      return Number.isFinite(val) ? val : 0;
+    }
+    function anyFilled() { return felder.some(el => (el?.value ?? '').trim().length > 0); }
+    function anyPositive() { return felder.some(el => getNumericValue(el) > 0); }
+
+    function setInlineInvalid(on) {
+      felder.forEach(el => {
+        el.classList.toggle('is-invalid', on);
+        el.setAttribute('aria-invalid', on ? 'true' : 'false');
+      });
+    }
+
+    function showGlobalError(msg) {
+      const btnRow = form?.querySelector('.d-flex.gap-2') || form;
+      let alert = form.querySelector('#globalFormError');
+      if (!alert) {
+        alert = document.createElement('div');
+        alert.id = 'globalFormError';
+        alert.className = 'alert alert-danger';
+        alert.setAttribute('role', 'alert');
+        alert.setAttribute('aria-live', 'assertive');
+        btnRow.parentNode.insertBefore(alert, btnRow);
+      }
+      alert.textContent = msg;
+      alert.classList.remove('d-none');
+      alert.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      (felder[0] || form).focus({ preventScroll: true });
+    }
+
+    function clearGlobalError() {
+      const alert = form?.querySelector('#globalFormError');
+      if (alert) {
+        alert.classList.add('d-none');
+        alert.textContent = '';
+      }
+    }
+
+    
+// Submit-Button deaktivieren bis mindestens ein Feld gefüllt ist
+const submitBtn = form?.querySelector('.btn.btn-success.flex-grow-1');
+function updateSubmit() {
+  if (!submitBtn) return;
+  const enabled = anyFilled();
+  submitBtn.disabled = !enabled;
+  submitBtn.setAttribute('aria-disabled', String(!enabled));
+  submitBtn.title = enabled ? '' : '{{ _("Bitte das Dienst-Formular vollständig ausfüllen.") }}';
+}
+
+feldIds.forEach(id => {
+  const el = document.getElementById(id);
+  el?.addEventListener('input', () => {
+    if (anyFilled()) {
+      setInlineInvalid(false);
+      clearGlobalError();
+    }
+    updateSubmit();
+  });
+  el?.addEventListener('change', updateSubmit);
+});
+updateSubmit();
+
+// Submit-Handler
+if (form) {
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) form.classList.remove('is-submitting');
+  });
+
+  form.addEventListener('submit', (event) => {
+    if (!anyFilled()) {
+      event.preventDefault();
+      event.stopPropagation();
+      setInlineInvalid(true);
+      showGlobalError('{{ _("Bitte Titel oder Bemerkung ausfüllen.") }}');
+      form.classList.add('was-validated');
+      updateSubmit();
+      return;
+    }
+
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+      form.classList.add('was-validated');
+      return;
+    }
+
+    form.classList.add('is-submitting');
+    form.classList.add('was-validated');
+  }, false);
+}
+  });
+</script>
+
+<script>
+  function sortTableByDate() {
+    const table = document.querySelector("table");
+    const tbody = table.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+    const isAsc = table.dataset.sortOrder !== "asc";
+    table.dataset.sortOrder = isAsc ? "asc" : "desc";
+    rows.sort((a, b) => {
+      const dateA = new Date(a.cells[0].innerText.split(".").reverse().join("-"));
+      const dateB = new Date(b.cells[0].innerText.split(".").reverse().join("-"));
+      return isAsc ? dateA - dateB : dateB - dateA;
+    });
+    rows.forEach(row => tbody.appendChild(row));
+  }
+</script>
+
+<script>
+  async function openAttachments(entryId) {
+    try {
+      const resp = await fetch(`{{ url_for('attachments_routes.attachments_list', entry_id=0) }}`.replace('0', entryId));
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const list = await resp.json();
+
+      const ul = document.getElementById('attachmentsList');
+      ul.innerHTML = '';
+
+      if (!list || list.length === 0) {
+        ul.innerHTML = `<li class="list-group-item text-muted">{{ _('Keine Anhänge vorhanden.') }}</li>`;
+        new bootstrap.Modal(document.getElementById('attachmentsModal')).show();
+        return;
+      }
+
+      if (list.length === 1) {
+        window.open(list[0].url, '_blank');
+        return;
+      }
+
+      list.forEach(it => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+        const left = document.createElement('div');
+        left.className = 'text-truncate';
+        left.style.maxWidth = '70%';
+
+        const icon = document.createElement('i');
+        icon.className = 'bi-paperclip me-1';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = it.name;
+
+        left.append(icon, nameSpan);
+
+        const openA = document.createElement('a');
+        openA.className = 'btn btn-sm btn-outline-primary';
+        openA.href = it.url;
+        openA.target = '_blank';
+        openA.textContent = "{{ _('Öffnen') }}";
+
+        li.append(left, openA);
+        ul.appendChild(li);
+      });
+
+      new bootstrap.Modal(document.getElementById('attachmentsModal')).show();
+    } catch (e) {
+      console.error(e);
+      alert('Fehler beim Laden der Anhänge.');
+    }
+  }
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const csrf = "{{ csrf_token() }}";
+    const token = document.getElementById('temp_token')?.value || '';
+    const listEl = document.getElementById('addTempAttachmentsList');
+    const badge = document.getElementById('uploadBadge');
+    const fileEl = document.getElementById('add_temp_files');
+    const btnUp = document.getElementById('btnTempUpload');
+
+    function toggleBtn() { if (btnUp) btnUp.disabled = !(fileEl?.files?.length > 0); }
+    fileEl?.addEventListener('change', toggleBtn);
+    toggleBtn();
+
+    function updateBadge(count) {
+      if (!badge) return;
+      if (count > 0) {
+        badge.textContent = count > 99 ? '99+' : String(count);
+        badge.classList.remove('d-none');
+      } else {
+        badge.classList.add('d-none');
+      }
+    }
+
+    async function refreshTempList() {
+      if (!token || !listEl) return;
+      const url = "{{ url_for('attachments_routes.attachments_temp_list', token='__T__') }}".replace('__T__', token);
+      const resp = await fetch(url, { credentials: 'same-origin' });
+      if (!resp.ok) return;
+      const items = await resp.json();
+      listEl.innerHTML = '';
+      updateBadge(items.length); // ← Badge aktualisieren
+      if (!items || items.length === 0) {
+        listEl.innerHTML = `<li class="list-group-item text-muted">{{ _('Keine Anhänge vorhanden.') }}</li>`;
+        updateBadge(0);
+        return;
+      }
+      updateBadge(items.length);
+      items.forEach(it => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        const left = document.createElement('div');
+        left.className = 'text-truncate'; left.style.maxWidth = '70%';
+        const icon = document.createElement('i'); icon.className = 'bi-paperclip me-1';
+        const nameSpan = document.createElement('span'); nameSpan.textContent = it.name;
+        left.append(icon, nameSpan);
+        const actions = document.createElement('div'); actions.className = 'd-flex gap-2';
+        const openA = document.createElement('a'); openA.className = 'btn btn-sm btn-outline-primary'; openA.href = it.url; openA.target = '_blank'; openA.textContent = "{{ _('Öffnen') }}";
+        const delBtn = document.createElement('button'); delBtn.className = 'btn btn-sm btn-outline-danger'; delBtn.dataset.id = it.id; delBtn.textContent = "{{ _('Löschen') }}";
+        delBtn.addEventListener('click', async (ev) => {
+          ev.preventDefault();
+          if (!confirm('{{ _("Anhang wirklich löschen?") }}')) return;
+          const attId = delBtn.dataset.id;
+          await fetch(`{{ url_for('attachments_routes.attachments_temp_delete', att_id=0) }}`.replace('0', attId), { method: 'POST', headers: { 'X-CSRF-Token': "{{ csrf_token() }}" }, credentials: 'same-origin' });
+          refreshTempList();
+        });
+        actions.append(openA, delBtn);
+        li.append(left, actions);
+        listEl.appendChild(li);
+      });
+    }
+
+    const uploadModalEl = document.getElementById('uploadModal');
+    if (uploadModalEl) uploadModalEl.addEventListener('shown.bs.modal', refreshTempList);
+
+    btnUp?.addEventListener('click', async () => {
+      if (!token || !fileEl || !fileEl.files?.length) return;
+      for (const f of fileEl.files) {
+        const fd = new FormData();
+        fd.append('files', f);
+        fd.append('csrf_token', csrf);
+        const url = "{{ url_for('attachments_routes.attachments_temp_upload', token='__T__') }}".replace('__T__', token);
+        const resp = await fetch(url, { method: 'POST', body: fd, credentials: 'same-origin' });
+        if (!resp.ok) { alert(await resp.text() || 'Upload fehlgeschlagen'); break; }
+      }
+      fileEl.value = '';
+      refreshTempList();
+    });
+
+    refreshTempList();
+  });
+</script>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('filtersForm');
+    const elRange = document.getElementById('filter_daterange');
+    const elFrom = document.getElementById('filter_from');
+    const elTo = document.getElementById('filter_to');
+
+    // Lokales YYYY-MM-DD (kein UTC-Shift)
+    const fmtLocal = (d) => {
+      if (!d) return '';
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    };
+
+    // Re-Submit nur bei echter Änderung (Loop-Schutz)
+    const submitIfChanged = (() => {
+      let lastKey = `${elFrom.value}|${elTo.value}`;
+      return () => {
+        const key = `${elFrom.value}|${elTo.value}`;
+        if (key === lastKey) return;
+        lastKey = key;
+        form?.requestSubmit();
+      };
+    })();
+
+    // Auto-Submit für Anhänge  Enter im Suchfeld
+    document.getElementById('filter_attachments')?.addEventListener('change', submitIfChanged);
+    document.getElementById('filter_q')?.addEventListener('keydown', e => { if (e.key === 'Enter') submitIfChanged(); });
+
+    if (!window.flatpickr || !elRange) return;
+    if (flatpickr.l10ns?.de) flatpickr.localize(flatpickr.l10ns.de);
+    const isDark = () => document.documentElement.getAttribute('data-bs-theme') === 'dark';
+
+    let hydrating = true; // verhindert Submit beim Initialisieren
+    const fp = flatpickr(elRange, {
+      mode: 'range',
+      dateFormat: 'Y-m-d',  // intern
+      altInput: true,
+      altFormat: 'd.m.Y',   // Anzeige
+      allowInput: true,
+      clickOpens: true,
+      locale: { rangeSeparator: ' – ', firstDayOfWeek: 1 },
+      onOpen: (_, __, i) => i.calendarContainer.classList.toggle('flatpickr-dark', isDark()),
+      onChange: (dates) => {
+        const [from, to] = dates;
+        elFrom.value = fmtLocal(from);
+        elTo.value = fmtLocal(to);
+        if (!hydrating && from && to) submitIfChanged();
+      }
+    });
+
+    // Vorbelegung aus Query OHNE Events → kein First-Load-Submit
+    const preset = [elFrom.value, elTo.value].filter(Boolean);
+    if (preset.length) {
+      fp.setDate(preset, false, 'Y-m-d'); // false = keine Events
+    }
+    hydrating = false;
+
+    // Dark/Light live nachziehen
+    new MutationObserver(() => {
+      document.querySelectorAll('.flatpickr-calendar')
+        .forEach(c => c.classList.toggle('flatpickr-dark', isDark()));
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+  });
+
+</script>
+
+
+<script>
+function aggregate() {
+    const rows = document.querySelectorAll('.data-row');
+    rows.forEach(row => {
+        const aValues = row.querySelectorAll('.a');
+        const eValues = row.querySelectorAll('.e');
+        const uValues = row.querySelectorAll('.u');
+
+        const sum = (nodes) => Array.from(nodes).reduce((acc, el) => acc + parseFloat(el.textContent || 0), 0);
+
+        row.querySelector('.sum-a').textContent = sum(aValues);
+        row.querySelector('.sum-e').textContent = sum(eValues);
+        row.querySelector('.sum-u').textContent = sum(uValues);
+    });
+}
+document.addEventListener('DOMContentLoaded', aggregate);
+</script>
+
+
+{% endblock %}
