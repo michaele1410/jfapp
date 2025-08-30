@@ -3,9 +3,11 @@
 # -----------------------
 import os
 import io
-from flask import render_template, request, redirect, url_for, session, send_file, flash, abort, Blueprint
+from flask import render_template, request, redirect, url_for, session, send_file, flash, abort, Blueprint, jsonify
 from flask_babel import gettext as _
 from sqlalchemy import text
+import json
+
 from datetime import datetime, date
 import csv
 
@@ -177,7 +179,7 @@ def edit(entry_id: int):
     with engine.begin() as conn:
         # 1) Eintrag OHNE 'unit' selektieren (gibt es nicht in entries)
         row = conn.execute(text("""
-            SELECT id, datum, vollgut, leergut, einnahme, ausgabe, bemerkung, titel, created_by
+            SELECT id, datum, vollgut, leergut, einnahme, ausgabe, bemerkung, titel, interessenten, created_by
             FROM entries
             WHERE id = :id
         """), {'id': entry_id}).mappings().first()
@@ -240,7 +242,8 @@ def edit(entry_id: int):
         'einnahme': row['einnahme'],
         'ausgabe': row['ausgabe'],
         'bemerkung': row['bemerkung'],
-        'titel': row['titel']
+        'titel': row['titel'],
+        'interessenten': row.get('interessenten') or [] 
     }
 
     # Anhänge
@@ -273,7 +276,7 @@ def edit_post(entry_id: int):
     # 1) Altwerte laden
     with engine.begin() as conn:
         row = conn.execute(text("""
-            SELECT id, datum, vollgut, leergut, einnahme, ausgabe, bemerkung, titel, created_by
+            SELECT id, datum, vollgut, leergut, einnahme, ausgabe, bemerkung, titel, interessenten, created_by
             FROM entries
             WHERE id=:id
         """), {'id': entry_id}).mappings().first()
@@ -332,7 +335,8 @@ def edit_post(entry_id: int):
     changes = []
     # ... (bestehende Diff-Logik bleibt)
 
-    # 6) Speichern
+    
+# 6) Speichern
     with engine.begin() as conn:
         conn.execute(text("""
             UPDATE entries
@@ -356,7 +360,7 @@ def edit_post(entry_id: int):
             'titel': titel
         })
 
-        # Anwesenheit neu speichern (wie bereits bei dir skizziert):
+        # Anwesenheit neu speichern (bereits vorhanden)
         conn.execute(text("DELETE FROM anwesenheit WHERE entry_id=:eid"), {'eid': entry_id})
         for d in anwesenheit_data:
             conn.execute(text("""
@@ -371,13 +375,63 @@ def edit_post(entry_id: int):
                 'bem': d['bemerkung']
             })
 
-        # Audit-Log wie gehabt
+       # 👉 Interessenten aus dem Formular sammeln
+        interessenten = []
+        indices = set()
+        for k in request.form.keys():
+            if k.startswith('interessent_name_'):
+                indices.add(k.split('_')[-1])
+
+        for idx in sorted(indices, key=lambda x: int(x) if str(x).isdigit() else 0):
+            name = (request.form.get(f"interessent_name_{idx}") or '').strip()
+            unit = (request.form.get(f"interessent_unit_{idx}") or '').strip()
+            a = bool(request.form.get(f"interessent_a_{idx}"))
+            e = bool(request.form.get(f"interessent_e_{idx}"))
+            u = bool(request.form.get(f"interessent_u_{idx}"))
+            bem = (request.form.get(f"interessent_bemerkung_{idx}") or '').strip()
+
+            # Leerzeilen überspringen
+            if not (name or unit or bem or a or e or u):
+                continue
+
+            interessenten.append({
+                "name": name,
+                "loescheinheit": unit,
+                "a": a,
+                "e": e,
+                "u": u,
+                "bemerkung": bem
+            })
+
+        # JSONB sauber in entries schreiben
+        conn.execute(text("""
+            UPDATE entries
+            SET interessenten = CAST(:data AS JSONB)
+            WHERE id = :id
+        """), {'data': json.dumps(interessenten), 'id': entry_id})
+
+        # Audit-Log zuletzt
         now_str = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
         detail_text = f"Bearbeitet am {now_str}\n" + ("\n".join([f"- {lbl}: {old} → {new}" for _, lbl, old, new in changes]) if changes else "(keine Feldänderungen)")
         conn.execute(text("""
             INSERT INTO audit_log (user_id, action, entry_id, detail)
             VALUES (:uid, 'edit', :eid, :detail)
         """), {'uid': session.get('user_id'), 'eid': entry_id, 'detail': detail_text})
+
+
+    # Interessenten aus dem Formular sammeln
+        interessenten = []
+        for key in request.form:
+            if key.startswith('interessent_name_'):
+                idx = key.split('_')[-1]
+                interessenten.append({
+                    "name": request.form.get(f"interessent_name_{idx}"),
+                    "loescheinheit": request.form.get(f"interessent_unit_{idx}"),
+                    "a": bool(request.form.get(f"interessent_a_{idx}")),
+                    "e": bool(request.form.get(f"interessent_e_{idx}")),
+                    "u": bool(request.form.get(f"interessent_u_{idx}")),
+                    "bemerkung": request.form.get(f"interessent_bemerkung_{idx}")
+                })
 
     flash(_('Dienst wurde gespeichert.'), 'success')
     return redirect(url_for('bbalance_routes.index'))
@@ -399,6 +453,20 @@ def delete(entry_id: int):
         conn.execute(text('DELETE FROM entries WHERE id=:id'), {'id': entry_id})
     log_action(session.get('user_id'), 'entries:delete', entry_id, None)
     return redirect(url_for('bbalance_routes.index'))
+
+@bbalance_routes.route('/entry/<int:id>/interessenten', methods=['POST'])
+def update_interessenten(id: int):
+    payload = request.get_json(silent=True) or {}
+    interessenten = payload.get('interessenten', [])
+    with engine.begin() as conn:
+        conn.execute(text("""
+            UPDATE entries
+            SET interessenten = CAST(:data AS JSONB),
+                updated_at = NOW()
+            WHERE id = :id
+        """), {"data": json.dumps(interessenten), "id": id})
+    return jsonify({"status": "ok"})
+
 
 # -----------------------
 # Export/Import

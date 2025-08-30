@@ -280,6 +280,7 @@ CREATE TABLE IF NOT EXISTS entries (
     ausgabe NUMERIC(12,2) NOT NULL DEFAULT 0,
     titel TEXT,
     bemerkung TEXT,
+    interessenten JSONB DEFAULT '[]',
     created_by INTEGER,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()

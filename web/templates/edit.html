@@ -13,38 +13,32 @@
         </div>
         <h1 class="h5 mb-3">{{ _('Datensatz bearbeiten') }}</h1>
 
-        <form method="post" action="{{ url_for('bbalance_routes.edit_post', entry_id=data.id) }}" class="row g-3"
-          id="transaction-form" novalidate>
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
+        <form action="{{ url_for('bbalance_routes.edit_post', entry_id=data.id) }}" class="row g-3"
+          id="transaction-form" method="post" novalidate="">
+          <input name="csrf_token" type="hidden" value="{{ csrf_token() }}" />
           <!-- Datum -->
           <div class="form-floating mb-3">
-            <input type="text" name="datum" id="datum" class="form-control" placeholder="Datum"
-            value="{{ data.datum.strftime('%d.%m.%Y') if data.datum else '' }}"
-            required autofocus>
+            <input autofocus="" class="form-control" id="datum" name="datum" placeholder="Datum" required="" type="text"
+              value="{{ data.datum.strftime('%d.%m.%Y') if data.datum else '' }}" />
             <label for="datum">{{ _('Datum') }}</label>
           </div>
-
           <div class="form-floating mb-3">
-            <input id="titel" name="titel" class="form-control" maxlength="500" placeholder="{{ _('Titel') }}"
-              value="{{ data.titel or '' }}">
+            <input class="form-control" id="titel" maxlength="500" name="titel" placeholder="{{ _('Titel') }}"
+              value="{{ data.titel or '' }}" />
             <label for="Titel">{{ _('Titel') }}</label>
           </div>
-
           <!-- Vollgut -->
           <!--div class="form-floating mb-3">
             <input id="vollgut" name="vollgut" type="number" inputmode="numeric" min="0" step="1" class="form-control"
               placeholder="0" autocomplete="off" value="{{ data.vollgut if data.vollgut is not none else '' }}">
             <label for="vollgut">{{ _('Vollgut') }}</label>
           </div-->
-
           <!-- Leergut -->
           <!--div class="form-floating mb-3">
             <input id="leergut" name="leergut" type="number" inputmode="numeric" min="0" step="1" class="form-control"
               placeholder="0" autocomplete="off" value="{{ data.leergut if data.leergut is not none else '' }}">
             <label for="leergut">{{ _('Leergut') }}</label>
           </div-->
-
           <!-- Einnahme -->
           <!--div class="input-group mb-3">
             <span class="input-group-text">{{ _('waehrung') }}</span>
@@ -55,7 +49,6 @@
               <label for="einnahme">{{ _('Einnahme') }}</label>
             </div>
           </div-->
-
           <!-- Ausgabe -->
           <!--div class="input-group mb-3">
             <span class="input-group-text">{{ _('waehrung') }}</span>
@@ -66,11 +59,10 @@
               <label for="ausgabe">{{ _('Ausgabe') }}</label>
             </div>
           </div-->
-
           <!-- Bemerkung -->
           <div class="form-floating mb-3">
-            <input id="bemerkung" name="bemerkung" class="form-control" maxlength="500" placeholder="{{ _('Bemerkung') }}"
-              value="{{ data.bemerkung or '' }}">
+            <input class="form-control" id="bemerkung" maxlength="500" name="bemerkung"
+              placeholder="{{ _('Bemerkung') }}" value="{{ data.bemerkung or '' }}" />
             <label for="bemerkung">{{ _('Bemerkung') }}</label>
           </div>
           <!-- Bemerkung als Dropdown -->
@@ -88,7 +80,6 @@
             {% endif %}
           </select-->
           <!--label for="bemerkung">{{ _('Bemerkung') }}</label-->
-        
         <h5 class="mt-4">Anwesenheit – Jugendliche</h5>
 <table class="table table-sm table-bordered align-middle">
   <thead class="table-light">
@@ -122,6 +113,36 @@
     {% endfor %}
   </tbody>
 </table>
+<h5 class="mt-5">Anwesenheit – Interessenten</h5>
+  <table class="table table-sm table-bordered align-middle" id="interessenten-table">
+    <thead class="table-light">
+      <tr>
+        <th>Name</th>
+        <th>Einheit</th>
+        <th class="text-center">A</th>
+        <th class="text-center">E</th>
+        <th class="text-center">U</th>
+        <th>Bemerkung</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in (data.interessenten or []) %}
+      {% set i = loop.index0 %}
+      <tr>
+        <td><input type="text" name="interessent_name_{{ i }}" value="{{ item.name }}" class="form-control"></td>
+        <td><input type="text" name="interessent_unit_{{ i }}" value="{{ item.loescheinheit }}" class="form-control"></td>
+        <td class="text-center"><input type="checkbox" name="interessent_a_{{ i }}" {% if item.a %}checked{% endif %}></td>
+        <td class="text-center"><input type="checkbox" name="interessent_e_{{ i }}" {% if item.e %}checked{% endif %}></td>
+        <td class="text-center"><input type="checkbox" name="interessent_u_{{ i }}" {% if item.u %}checked{% endif %}></td>
+        <td><input type="text" name="interessent_bemerkung_{{ i }}" value="{{ item.bemerkung }}" class="form-control"></td>
+        <td><button type="button" class="btn btn-sm btn-danger remove-row">✖</button></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+<button type="button" class="btn btn-sm btn-outline-primary" id="add-interessent">+ Interessent hinzufügen</button>
+
 
 <h5 class="mt-5">Anwesenheit – Betreuer</h5>
 <table class="table table-sm table-bordered align-middle">
@@ -150,19 +171,18 @@
         <input type="checkbox" name="anwesenheit_{{ u.id }}_U" {% if u.unentschuldigt %}checked{% endif %}>
       </td>
       <td>
-        <input type="text" name="bemerkung_{{ u.id }}" class="form-control" value="{{ u.bemerkung or '' }}">
+                  <input class="form-control" name="bemerkung_{{ u.id }}" type="text" value="{{ u.bemerkung or '' }}" />
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
+        </form>
         </div>
-
           <div class="col-12 d-flex gap-2">
             <a class="btn btn-outline-secondary" href="{{ url_for('bbalance_routes.index') }}">{{ _('Abbrechen') }}</a>
-            <button class="btn btn-primary">{{ _('Speichern') }}</button>
+            <button class="btn btn-primary" form="transaction-form">{{ _('Speichern') }}</button>
           </div>
-        </form>
 
         <!--hr class="my-4">
         <h3 class="h6 mb-3">{{ _('Anhänge') }}</h3>
@@ -229,7 +249,6 @@
   </div>
 </div-->
 {% endblock %}
-
 {% block scripts %}
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -270,7 +289,6 @@
     }
   });
 </script>
-
 <script>
   document.addEventListener('DOMContentLoaded', async () => {
     const entryId = {{ data.id }};
@@ -310,7 +328,35 @@
   } catch (e) {
     console.error('Fehler beim Laden der Anhänge:', e);
     listGroup.innerHTML = `<div class="list-group-item text-danger">Fehler beim Laden der Anhänge.</div>`;
-  }
+  }});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const tableBody = document.getElementById('interessenten-table').querySelector('tbody');
+  const addBtn = document.getElementById('add-interessent');
+  let index = {{ (data.interessenten|length) if data.interessenten else 0 }};
+
+  addBtn.addEventListener('click', () => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" name="interessent_name_${index}" class="form-control"></td>
+      <td><input type="text" name="interessent_unit_${index}" class="form-control"></td>
+      <td class="text-center"><input type="checkbox" name="interessent_a_${index}"></td>
+      <td class="text-center"><input type="checkbox" name="interessent_e_${index}"></td>
+      <td class="text-center"><input type="checkbox" name="interessent_u_${index}"></td>
+      <td><input type="text" name="interessent_bemerkung_${index}" class="form-control"></td>
+      <td><button type="button" class="btn btn-sm btn-danger remove-row">✖</button></td>
+    `;
+    tableBody.appendChild(row);
+    index++;
+  });
+
+  tableBody.addEventListener('click', (e) => {
+    if (e.target.classList.contains('remove-row')) {
+      e.target.closest('tr').remove();
+    }
+  });
 });
 </script>
 {% endblock %}
