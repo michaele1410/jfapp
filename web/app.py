@@ -166,8 +166,6 @@ def setup_logger(name):
     logger.addHandler(handler)
     return logger
 
-
-
 # -----------------------
 # Feature Switches (ENV)
 # -----------------------
@@ -177,9 +175,6 @@ IMPORT_ALLOW_DRYRUN  = os.getenv("IMPORT_ALLOW_DRYRUN", "true").lower() in ("1",
 
 # Optionaler API-Token für CI/Headless-Dry-Runs (Header: X-Import-Token)
 IMPORT_API_TOKEN     = os.getenv("IMPORT_API_TOKEN")  # leer = kein Token erlaubt
-
-
-
 
 def serialize_attachment(att):
     return {

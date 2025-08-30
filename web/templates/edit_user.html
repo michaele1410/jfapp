@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4">
-  <h2>Benutzer bearbeiten: {{ user.username }}</h2>
+  <h2>Mitglied bearbeiten: {{ user.username }}</h2>
   <form method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 

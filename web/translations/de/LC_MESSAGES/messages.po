@@ -156,7 +156,7 @@ msgid "Benutzer gelöscht."
 msgstr ""
 
 #: app.py:1231
-msgid "Eintrag nicht gefunden."
+msgid "Dienst nicht gefunden."
 msgstr ""
 
 #: app.py:1330 app.py:1782
@@ -582,7 +582,7 @@ msgid "Bearbeiten"
 msgstr ""
 
 #: templates/index.html:221
-msgid "Eintrag wirklich löschen?"
+msgid "Dienst wirklich löschen?"
 msgstr ""
 
 #: templates/index.html:223 templates/users.html:81

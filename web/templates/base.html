@@ -50,7 +50,7 @@
 
         {% if 'users:manage' in (ROLES.get(session.get('role'), [])) %}
         <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('user_routes.users_list') }}">
-          <i class="bi-people me-1"></i> {{ _('Benutzer') }}
+          <i class="bi-people me-1"></i> {{ _('Mitglieder') }}
         </a>
         {% endif %}
 

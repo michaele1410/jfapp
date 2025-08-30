@@ -201,19 +201,31 @@ def edit(entry_id: int):
 
         # 4) Users + Anwesenheit  ✅ hier u.unit selektieren
         users = conn.execute(text("""
-            SELECT u.id,
-                   u.username,
-                   u.unit,  -- <— falls deine Spalte anders heißt, hier anpassen (z. B. u.loescheinheit)
-                   a.anwesend,
-                   a.entschuldigt,
-                   a.unentschuldigt,
-                   a.bemerkung
-            FROM users u
-            LEFT JOIN anwesenheit a
-              ON a.user_id = u.id AND a.entry_id = :eid
-            WHERE u.active = TRUE
-            ORDER BY u.unit, u.username
-        """), {'eid': entry_id}).mappings().all()
+        SELECT u.id,
+            u.username,
+            u.unit,
+            u.supervisor,
+            u.chief,
+            a.anwesend,
+            a.entschuldigt,
+            a.unentschuldigt,
+            a.bemerkung
+        FROM users u
+        LEFT JOIN anwesenheit a
+        ON a.user_id = u.id AND a.entry_id = :eid
+        WHERE u.active = TRUE
+    """), {'eid': entry_id}).mappings().all()
+
+    # Gruppieren in Python
+    jugendliche = sorted(
+        [u for u in users if not u.supervisor and not u.chief],
+        key=lambda x: (x.unit or '', x.username or '')
+    )
+    betreuer = sorted(
+        [u for u in users if u.supervisor or u.chief],
+        key=lambda x: (x.unit or '', x.username or '')
+    )
+
 
     if not row:
         flash(_('Eintrag nicht gefunden.'))
@@ -244,12 +256,13 @@ def edit(entry_id: int):
     bemerkungsoptionen = get_bemerkungsoptionen()
 
     return render_template(
-        'edit.html',
+    'edit.html',
         data=data,
         attachments=att_data,
         audit=audit,
         bemerkungsoptionen=bemerkungsoptionen,
-        users=users
+        jugendliche=jugendliche,
+        betreuer=betreuer
     )
 
 @bbalance_routes.post('/edit/<int:entry_id>')
@@ -366,7 +379,7 @@ def edit_post(entry_id: int):
             VALUES (:uid, 'edit', :eid, :detail)
         """), {'uid': session.get('user_id'), 'eid': entry_id, 'detail': detail_text})
 
-    flash(_('Eintrag wurde gespeichert.'), 'success')
+    flash(_('Dienst wurde gespeichert.'), 'success')
     return redirect(url_for('bbalance_routes.index'))
 
 @bbalance_routes.post('/delete/<int:entry_id>')
