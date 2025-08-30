@@ -4,6 +4,13 @@
   <div class="col-12 col-lg-8">
     <div class="card shadow-sm">
       <div class="card-body">
+        <div style="margin: 20px 0;">
+          <form method="post" action="/send_attendance_to_chiefs">
+            <button type="submit" class="btn btn-warning" style="font-weight: bold;">
+              Anwesenheitsliste an Chiefs senden
+            </button>
+          </form>
+        </div>
         <h1 class="h5 mb-3">{{ _('Datensatz bearbeiten') }}</h1>
 
         <form method="post" action="{{ url_for('bbalance_routes.edit_post', entry_id=data.id) }}" class="row g-3"

@@ -571,7 +571,80 @@ def cleanup_temp():
 
 
 
+@app.post('/send_attendance_to_chiefs')
+@login_required
+@require_csrf
+def send_attendance_to_chiefs():
+    try:
+        with engine.begin() as conn:
+            # Chiefs abrufen
+            chiefs = conn.execute(text("""
+                SELECT email FROM users WHERE chief = TRUE AND email IS NOT NULL
+            """)).scalars().all()
 
+            if not chiefs:
+                flash("Keine Chiefs mit E-Mail-Adresse gefunden.", "warning")
+                return redirect(request.referrer or url_for('bbalance_routes.index'))
+
+            # Letzten Dienst abrufen
+            dienst = conn.execute(text("""
+                SELECT id, datum FROM entries ORDER BY datum DESC LIMIT 1
+            """)).mappings().first()
+
+            if not dienst:
+                flash("Kein Dienst gefunden.", "warning")
+                return redirect(request.referrer or url_for('bbalance_routes.index'))
+
+            # Anwesenheiten abrufen
+            rows = conn.execute(text("""
+                SELECT u.username, u.unit, a.anwesend, a.entschuldigt, a.unentschuldigt, a.bemerkung
+                FROM anwesenheit a
+                JOIN users u ON u.id = a.user_id
+                WHERE a.entry_id = :eid
+                ORDER BY u.username
+            """), {'eid': dienst['id']}).mappings().all()
+
+        # E-Mail-Inhalt
+        lines = [f"Anwesenheitsliste für den Dienst am {dienst['datum'].strftime('%d.%m.%Y')}:\n"]
+        for r in rows:
+            status = []
+            if r['anwesend']:
+                status.append("A")
+            if r['entschuldigt']:
+                status.append("E")
+            if r['unentschuldigt']:
+                status.append("U")
+            status_str = "/".join(status) or "-"
+            bemerkung = r['bemerkung'] or "-"
+            lines.append(f"- {r['username']} ({r['unit']}): {status_str} ({bemerkung})")
+
+        body = "\n".join(lines)
+
+        # SMTP-Konfiguration
+        if SMTP_SSL_ON:
+            server = SMTP_SSL(SMTP_HOST, SMTP_PORT, timeout=SMTP_TIMEOUT)
+        else:
+            server = SMTP(SMTP_HOST, SMTP_PORT, timeout=SMTP_TIMEOUT)
+            if SMTP_TLS:
+                server.starttls(context=ssl.create_default_context())
+
+        server.login(SMTP_USER, SMTP_PASS)
+
+        for recipient in chiefs:
+            msg = EmailMessage()
+            msg['Subject'] = "Anwesenheitsliste"
+            msg['From'] = FROM_EMAIL
+            msg['To'] = recipient
+            msg.set_content(body)
+            server.send_message(msg)
+
+        server.quit()
+        flash("Anwesenheitsliste wurde an alle Chiefs gesendet.", "success")
+    except Exception as e:
+        logger.exception("Fehler beim Senden der Anwesenheitsliste: %s", e)
+        flash("Fehler beim Senden der Anwesenheitsliste.", "danger")
+
+    return redirect(request.referrer or url_for('bbalance_routes.index'))
 
 
 

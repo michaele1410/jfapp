@@ -164,7 +164,7 @@ def add():
         })
         new_id = res.scalar_one()
 
-        flash(_('Datensatz wurde gespeichert.'), 'success')
+        flash(_('Dienst wurde gespeichert.'), 'success')
 
     # Token für diese Seite invalidieren (One-shot)
     session.pop('add_temp_token', None)
