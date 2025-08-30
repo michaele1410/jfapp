@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h1 class="h5 mb-3">{{ _('Mitgliederverwaltung') }}</h1>
+
+    <!-- Neuer Benutzer -->
+    <form method="post" action="{{ url_for('user_routes.users_add') }}" class="row g-2 align-items-end mb-3">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="col-12 col-md-3">
+        <label class="form-label">{{ _('Mitglied') }}</label>
+        <input name="username" class="form-control" required>
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label">{{ _('E-Mail') }}</label>
+        <input name="email" type="email" class="form-control">
+      </div>
+      <!--div class="col-12 col-md-2">
+        <label class="form-label">{{ _('Rolle') }}</label>
+        <select class="form-select" name="role">
+          {% for r in ROLES.keys() %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+        </select>
+      </div-->
+      <div class="col-12 col-md-3">
+        <label class="form-label">{{ _('Löscheinheit') }}</label>
+        <select name="unit" class="form-select" required>
+          <option value="">Bitte wählen</option>
+          <option value="Löscheinheit Hückelhoven">Löscheinheit Hückelhoven</option>
+          <option value="Löscheinheit Ratheim">Löscheinheit Ratheim</option>
+          <option value="Löscheinheit Kleingladbach">Löscheinheit Kleingladbach</option>
+          <option value="Löscheinheit Millich">Löscheinheit Millich</option>
+          <option value="Löscheinheit Doveren">Löscheinheit Doveren</option>
+          <option value="Löscheinheit Baal">Löscheinheit Baal</option>
+          <option value="Löscheinheit Rurich">Löscheinheit Rurich</option>
+          <option value="Löscheinheit Hilfarth">Löscheinheit Hilfarth</option>
+          <option value="Löscheinheit Brachelen">Löscheinheit Brachelen</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-2">
+        <label class="form-label">{{ _('Passwort') }}</label>
+        <input type="password" name="password" minlength="8" class="form-control" required>
+      </div>
+      <div class="col-12 col-md-2">
+        <button class="btn btn-success w-100">
+          <i class="bi bi-plus-lg me-1"></i> {{ _('Anlegen') }}
+        </button>
+      </div>
+    </form>
+
+    <!-- Liste der Benutzer -->
+    <div class="table-responsive">
+      <table class="table table-sm align-middle table-striped">
+        <thead class="table-light">
+          <tr>
+            <th>{{ _('Mitglied') }}</th>
+            <th>{{ _('Löscheinheit') }}</th>
+            <!--th>{{ _('E-Mail') }}</th-->
+            <!--th>{{ _('Rolle') }}</th-->
+            <th>{{ _('Aktiv') }}</th>
+            <th>{{ _('Jugendwart') }}</th>
+            <th>{{ _('Betreuer') }}</th>
+            <th>{{ _('Erstellt') }}</th>
+            <th class="text-end">{{ _('Aktionen') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <!-- Benutzername + ID -->
+            <td class="text-nowrap">
+              {{ u.username }}<br>
+              <!--small class="text-muted">ID: {{ u.id }}</small-->
+            </td>
+
+            <!-- E-Mail -->
+            <!--td>{{ u.email or '—' }}</td-->
+
+            <!-- Löscheinheit -->
+            <td>{{ u.unit or '—' }}</td>
+
+            <!-- Rollenwechsel -->
+            <!--<td>
+              <form method="post" action="{{ url_for('user_routes.users_change_role', uid=u.id) }}" class="d-flex gap-2">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <select class="form-select form-select-sm" name="role">
+                  {% for r in ROLES.keys() %}
+                  <option value="{{ r }}" {% if r==u.role %}selected{% endif %}>{{ r }}</option>
+                  {% endfor %}
+                </select>
+                <button class="btn btn-sm btn-outline-primary" title="{{ _('Speichern') }}">
+                  <i class="bi bi-save"></i>
+                </button>
+              </form>
+            </td-->
+
+            <!-- Aktiv-Toggle (mit Icon, i18n-Text) -->
+            <td>
+              <form method="post" action="{{ url_for('user_routes.users_toggle', uid=u.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% if u.active and user.id != u.id%}
+                <button class="btn btn-sm btn-outline-secondary" title="{{ _('Deaktivieren') }}">
+                  <i class="bi bi-toggle-on me-1"></i>{{ _('Deaktivieren') }}
+                </button>
+                {% else %}
+                <button class="btn btn-sm btn-outline-success" title="{{ _('Aktivieren') }}">
+                  <i class="bi bi-toggle-off me-1"></i>{{ _('Aktivieren') }}
+                </button>
+                {% endif %}
+              </form>
+            </td>
+
+            <!-- Geschäftsführend (can_approve) -->
+            <td>
+              <form method="post" action="{{ url_for('users_toggle_chief', uid=u.id) }}" class="d-inline">
+
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% if u.chief %}
+                <button class="btn btn-sm btn-success" title="{{ _('Berechtigung entfernen') }}">
+                  <i class="bi bi-check2-circle me-1"></i>{{ _('Ja') }}
+                </button>
+                {% else %}
+                <button class="btn btn-sm btn-outline-secondary" title="{{ _('Berechtigung vergeben') }}">
+                  <i class="bi bi-dash-circle me-1"></i>{{ _('Nein') }}
+                </button>
+                {% endif %}
+              </form>
+            </td>
+
+            <!-- Betreuer-->
+             <td>
+              <form method="post" action="{{ url_for('users_toggle_supervisor', uid=u.id) }}" class="d-inline">
+
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% if u.supervisor %}
+                <button class="btn btn-sm btn-success" title="{{ _('Berechtigung entfernen') }}">
+                  <i class="bi bi-check2-circle me-1"></i>{{ _('Ja') }}
+                </button>
+                {% else %}
+                <button class="btn btn-sm btn-outline-secondary" title="{{ _('Berechtigung vergeben') }}">
+                  <i class="bi bi-dash-circle me-1"></i>{{ _('Nein') }}
+                </button>
+                {% endif %}
+              </form>
+            </td>
+
+            <!-- Erstellt -->
+            <td class="text-nowrap">{{ u.created_at and u.created_at.strftime('%d.%m.%Y %H:%M') or '—' }}</td>
+
+            <!-- Aktualisiert-->
+            <!--td class="text-nowrap">{{ u.updated_at and u.updated_at.strftime('%d.%m.%Y %H:%M') or '—' }}</td-->
+
+           <!-- Buttons Aktionen-->
+            <td class="text-end">
+              <div class="d-flex gap-2 justify-content-end">
+                 <!-- Reset-Link -->
+                <!--form method="post" action="{{ url_for('user_routes.users_reset_link', uid=u.id) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-sm btn-outline-info" aria-label="{{ _('Reset-Link generieren') }}">
+                    <i class="bi bi-envelope me-1"></i>
+                  </button>
+                </form-->
+                
+                <!-- Bearbeiten -->
+                <a href="{{ url_for('user_routes.edit_user', uid=u.id) }}" class="btn btn-sm btn-outline-primary"
+                  title="{{ _('Benutzer bearbeiten') }}">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+
+                <!-- Löschen -->
+                <form method="post" action="{{ url_for('user_routes.users_delete', uid=u.id) }}"
+                  onsubmit="return confirm('{{ _('Benutzer wirklich löschen?') }}');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-sm btn-outline-danger" title="{{ _('Benutzer löschen') }}">
+                  <i class="bi-trash"></i>
+                </button>
+                </form>
+              </div>
+            </td>
+
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="8" class="text-center text-muted">{{ _('Keine Benutzer vorhanden') }}.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
