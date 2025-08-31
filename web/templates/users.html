@@ -25,20 +25,20 @@
         <label class="form-label">{{ _('Löscheinheit') }}</label>
         <select name="unit" class="form-select" required>
           <option value="">Bitte wählen</option>
-          <option value="Löscheinheit Hückelhoven">Löscheinheit Hückelhoven</option>
-          <option value="Löscheinheit Ratheim">Löscheinheit Ratheim</option>
-          <option value="Löscheinheit Kleingladbach">Löscheinheit Kleingladbach</option>
-          <option value="Löscheinheit Millich">Löscheinheit Millich</option>
-          <option value="Löscheinheit Doveren">Löscheinheit Doveren</option>
-          <option value="Löscheinheit Baal">Löscheinheit Baal</option>
-          <option value="Löscheinheit Rurich">Löscheinheit Rurich</option>
-          <option value="Löscheinheit Hilfarth">Löscheinheit Hilfarth</option>
-          <option value="Löscheinheit Brachelen">Löscheinheit Brachelen</option>
+          <option value="Hückelhoven">Hückelhoven</option>
+          <option value="Ratheim">Ratheim</option>
+          <option value="Kleingladbach">Kleingladbach</option>
+          <option value="Millich">Millich</option>
+          <option value="Doveren">Doveren</option>
+          <option value="Baal">Baal</option>
+          <option value="Rurich">Rurich</option>
+          <option value="Hilfarth">Hilfarth</option>
+          <option value="Brachelen">Brachelen</option>
         </select>
       </div>
       <div class="col-12 col-md-2">
         <label class="form-label">{{ _('Passwort') }}</label>
-        <input type="password" name="password" minlength="8" class="form-control" required>
+        <input type="password" name="password" minlength="8" class="form-control">
       </div>
       <div class="col-12 col-md-2">
         <button class="btn btn-success w-100">
@@ -46,6 +46,15 @@
         </button>
       </div>
     </form>
+
+    <div class="row mb-2">
+      <div class="col-md-3">
+        <input type="text" id="filterName" class="form-control" placeholder="Nach Mitglied filtern">
+      </div>
+      <div class="col-md-3">
+        <input type="text" id="filterUnit" class="form-control" placeholder="Nach Einheit filtern">
+      </div>
+    </div>
 
     <!-- Liste der Benutzer -->
     <div class="table-responsive">
@@ -75,7 +84,7 @@
             <!-- E-Mail -->
             <!--td>{{ u.email or '—' }}</td-->
 
-            <!-- Löscheinheit -->
+            <!-- -->
             <td>{{ u.unit or '—' }}</td>
 
             <!-- Rollenwechsel -->
@@ -97,7 +106,7 @@
             <td>
               <form method="post" action="{{ url_for('user_routes.users_toggle', uid=u.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {% if u.active and user.id != u.id%}
+                {% if u.active and current_user.id != u.id %}
                 <button class="btn btn-sm btn-outline-secondary" title="{{ _('Deaktivieren') }}">
                   <i class="bi bi-toggle-on me-1"></i>{{ _('Deaktivieren') }}
                 </button>
@@ -189,4 +198,29 @@
 
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const filterName = document.getElementById('filterName');
+  const filterUnit = document.getElementById('filterUnit');
+  const rows = document.querySelectorAll('table tbody tr');
+
+  function applyFilters() {
+    const nameVal = filterName.value.toLowerCase();
+    const unitVal = filterUnit.value.toLowerCase();
+
+    rows.forEach(row => {
+      const nameCell = row.cells[0]?.innerText.toLowerCase() || '';
+      const unitCell = row.cells[1]?.innerText.toLowerCase() || '';
+      const match = nameCell.includes(nameVal) && unitCell.includes(unitVal);
+      row.style.display = match ? '' : 'none';
+    });
+  }
+
+  filterName.addEventListener('input', applyFilters);
+  filterUnit.addEventListener('input', applyFilters);
+});
+</script>
 {% endblock %}

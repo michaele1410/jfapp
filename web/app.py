@@ -97,7 +97,8 @@ from modules.csv_utils import (
     compute_auto_mapping,
     parse_date_de_or_today,
     _signature,
-    _fetch_existing_signature_set
+    _fetch_existing_signature_set,
+    generate_attendance_pdf
 )
 
 
@@ -292,7 +293,7 @@ CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     email TEXT,
-    password_hash TEXT NOT NULL,
+    password_hash TEXT,
     role TEXT,
     active BOOLEAN NOT NULL DEFAULT TRUE,
     must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
@@ -570,15 +571,12 @@ def cleanup_temp():
             pass
     print(f"Temp cleanup done. Files removed: {removed}")
 
-
-
 @app.post('/send_attendance_to_chiefs')
 @login_required
 @require_csrf
 def send_attendance_to_chiefs():
     try:
         with engine.begin() as conn:
-            # Chiefs abrufen
             chiefs = conn.execute(text("""
                 SELECT email FROM users WHERE chief = TRUE AND email IS NOT NULL
             """)).scalars().all()
@@ -587,39 +585,64 @@ def send_attendance_to_chiefs():
                 flash("Keine Chiefs mit E-Mail-Adresse gefunden.", "warning")
                 return redirect(request.referrer or url_for('bbalance_routes.index'))
 
-            # Letzten Dienst abrufen
             dienst = conn.execute(text("""
-                SELECT id, datum FROM entries ORDER BY datum DESC LIMIT 1
+                SELECT id, datum, interessenten FROM entries ORDER BY datum DESC LIMIT 1
             """)).mappings().first()
 
             if not dienst:
                 flash("Kein Dienst gefunden.", "warning")
                 return redirect(request.referrer or url_for('bbalance_routes.index'))
 
-            # Anwesenheiten abrufen
             rows = conn.execute(text("""
-                SELECT u.username, u.unit, a.anwesend, a.entschuldigt, a.unentschuldigt, a.bemerkung
+                SELECT u.username, u.unit, u.chief, u.supervisor,
+                       a.anwesend, a.entschuldigt, a.unentschuldigt, a.bemerkung
                 FROM anwesenheit a
                 JOIN users u ON u.id = a.user_id
                 WHERE a.entry_id = :eid
                 ORDER BY u.username
             """), {'eid': dienst['id']}).mappings().all()
 
-        # E-Mail-Inhalt
-        lines = [f"Anwesenheitsliste für den Dienst am {dienst['datum'].strftime('%d.%m.%Y')}:\n"]
-        for r in rows:
-            status = []
-            if r['anwesend']:
-                status.append("A")
-            if r['entschuldigt']:
-                status.append("E")
-            if r['unentschuldigt']:
-                status.append("U")
-            status_str = "/".join(status) or "-"
-            bemerkung = r['bemerkung'] or "-"
-            lines.append(f"- {r['username']} ({r['unit']}): {status_str} ({bemerkung})")
+        interessenten = dienst['interessenten'] or []
+        jugendliche = [r for r in rows if not r['chief'] and not r['supervisor']]
+        betreuer = [r for r in rows if r['chief'] or r['supervisor']]
 
-        body = "\n".join(lines)
+        def render_table(title, data, columns):
+            html = [f"<h3>{title}</h3><table><thead><tr>"]
+            for col in columns:
+                html.append(f"<th>{col}</th>")
+            html.append("</tr></thead><tbody>")
+            for r in data:
+                html.append("<tr>")
+                for col in columns:
+                    if col == "A":
+                        html.append(f"<td>{'✓' if r.get('anwesend') or r.get('a') else ''}</td>")
+                    elif col == "E":
+                        html.append(f"<td>{'✓' if r.get('entschuldigt') or r.get('e') else ''}</td>")
+                    elif col == "U":
+                        html.append(f"<td>{'✓' if r.get('unentschuldigt') or r.get('u') else ''}</td>")
+                    elif col == "Bemerkung":
+                        html.append(f"<td>{r.get('bemerkung') or '-'}</td>")
+                    elif col == "Mitglied":
+                        html.append(f"<td>{r.get('username')}</td>")
+                    elif col == "Name":
+                        html.append(f"<td>{r.get('name')}</td>")
+                    elif col == "Einheit":
+                        html.append(f"<td>{r.get('unit') or '-'}</td>")
+                html.append("</tr>")
+            html.append("</tbody></table>")
+            return "\n".join(html)
+
+        html_content = f"""
+        <html><body>
+        <h2>Anwesenheitsliste für den Dienst am {dienst['datum'].strftime('%d.%m.%Y')}</h2>
+        {render_table("Anwesenheit – Jugendliche", jugendliche, ["Mitglied", "Einheit", "A", "E", "U", "Bemerkung"])}
+        {render_table("Anwesenheit – Interessenten", interessenten, ["Name", "Einheit", "A", "E", "U", "Bemerkung"])}
+        {render_table("Anwesenheit – Betreuer", betreuer, ["Mitglied", "Einheit", "A", "E", "U", "Bemerkung"])}
+        </body></html>
+        """
+
+        # PDF-Datei laden
+        pdf_data = generate_attendance_pdf(dienst, jugendliche, interessenten, betreuer)
 
         # SMTP-Konfiguration
         if SMTP_SSL_ON:
@@ -636,7 +659,8 @@ def send_attendance_to_chiefs():
             msg['Subject'] = "Anwesenheitsliste"
             msg['From'] = FROM_EMAIL
             msg['To'] = recipient
-            msg.set_content(body)
+            msg.add_alternative(html_content, subtype='html')
+            msg.add_attachment(pdf_data, maintype='application', subtype='pdf', filename='anwesenheitsliste.pdf')
             server.send_message(msg)
 
         server.quit()
@@ -646,8 +670,6 @@ def send_attendance_to_chiefs():
         flash("Fehler beim Senden der Anwesenheitsliste.", "danger")
 
     return redirect(request.referrer or url_for('bbalance_routes.index'))
-
-
 
 # -----------------------
 # Error Handling
@@ -765,13 +787,13 @@ def profile_post():
     email = (request.form.get('email') or '').strip()
     uid = session['user_id']
 
-    if pwd or pwd2:
-        if len(pwd) < 8:
-            flash(_('Passwort muss mindestens 8 Zeichen haben.'))
-            return redirect(url_for('profile'))
-        if pwd != pwd2:
-            flash(_('Passwörter stimmen nicht überein.'))
-            return redirect(url_for('profile'))
+    #if pwd or pwd2:
+    #    if len(pwd) < 8:
+    #        flash(_('Passwort muss mindestens 8 Zeichen haben.'))
+    #        return redirect(url_for('profile'))
+    if pwd != pwd2:
+        flash(_('Passwörter stimmen nicht überein.'))
+        return redirect(url_for('profile'))
 
     with engine.begin() as conn:
         if pwd:

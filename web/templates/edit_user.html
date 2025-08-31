@@ -29,15 +29,15 @@
         <select name="unit" id="unit" class="form-select">
           <option value="">Bitte wählen</option>
           {% set units = [
-            'Löscheinheit Hückelhoven',
-            'Löscheinheit Ratheim',
-            'Löscheinheit Kleingladbach',
-            'Löscheinheit Millich',
-            'Löscheinheit Doveren',
-            'Löscheinheit Baal',
-            'Löscheinheit Rurich',
-            'Löscheinheit Hilfarth',
-            'Löscheinheit Brachelen'
+            'Hückelhoven',
+            'Ratheim',
+            'Kleingladbach',
+            'Millich',
+            'Doveren',
+            'Baal',
+            'Rurich',
+            'Hilfarth',
+            'Brachelen'
           ] %}
           {% for uval in units %}
             <option value="{{ uval }}" {% if user.unit == uval %}selected{% endif %}>{{ uval }}</option>

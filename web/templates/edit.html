@@ -6,6 +6,7 @@
       <div class="card-body">
         <div style="margin: 20px 0;">
           <form method="post" action="/send_attendance_to_chiefs">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-warning" style="font-weight: bold;">
               Anwesenheitsliste an Chiefs senden
             </button>
@@ -131,7 +132,23 @@
       {% set i = loop.index0 %}
       <tr>
         <td><input type="text" name="interessent_name_{{ i }}" value="{{ item.name }}" class="form-control"></td>
-        <td><input type="text" name="interessent_unit_{{ i }}" value="{{ item.loescheinheit }}" class="form-control"></td>
+        <td>
+          <select name="interessent_unit_{{ i }}" class="form-select">
+            {% set einheiten = [
+              'Hückelhoven',
+              'Ratheim',
+              'Hilfarth',
+              'Brachelen',
+              'Baal',
+              'Doveren',
+              'Kleingladbach',
+              'Schaufenberg'
+            ] %}
+            {% for einheit in einheiten %}
+              <option value="{{ einheit }}" {% if item.loescheinheit == einheit %}selected{% endif %}>{{ einheit }}</option>
+            {% endfor %}
+          </select>
+        </td>
         <td class="text-center"><input type="checkbox" name="interessent_a_{{ i }}" {% if item.a %}checked{% endif %}></td>
         <td class="text-center"><input type="checkbox" name="interessent_e_{{ i }}" {% if item.e %}checked{% endif %}></td>
         <td class="text-center"><input type="checkbox" name="interessent_u_{{ i }}" {% if item.u %}checked{% endif %}></td>
@@ -337,11 +354,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const addBtn = document.getElementById('add-interessent');
   let index = {{ (data.interessenten|length) if data.interessenten else 0 }};
 
+  const einheiten = [
+    'Hückelhoven',
+    'Ratheim',
+    'Hilfarth',
+    'Brachelen',
+    'Baal',
+    'Doveren',
+    'Kleingladbach',
+    'Schaufenberg'
+  ];
+
+  function createEinheitDropdown(name) {
+    return '<select name="' + name + '" class="form-select">' +
+      einheiten.map(e => '<option value="' + e + '">' + e + '</option>').join('') +
+      '</select>';
+  }
+
   addBtn.addEventListener('click', () => {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td><input type="text" name="interessent_name_${index}" class="form-control"></td>
-      <td><input type="text" name="interessent_unit_${index}" class="form-control"></td>
+      <td>${createEinheitDropdown("interessent_unit_" + index)}</td>
       <td class="text-center"><input type="checkbox" name="interessent_a_${index}"></td>
       <td class="text-center"><input type="checkbox" name="interessent_e_${index}"></td>
       <td class="text-center"><input type="checkbox" name="interessent_u_${index}"></td>
@@ -359,4 +393,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.anwesenheit').forEach(function(checkbox) {
+    checkbox.addEventListener('change', function() {
+      if (this.checked) {
+        const userId = this.dataset.user;
+        // Alle Checkboxen für denselben User finden
+        document.querySelectorAll('.anwesenheit[data-user="' + userId + '"]').forEach(function(cb) {
+          if (cb !== checkbox) {
+            cb.checked = false;
+          }
+        });
+      }
+    });
+  });
+});
+</script>
+
 {% endblock %}

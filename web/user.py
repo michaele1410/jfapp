@@ -41,7 +41,6 @@ user_routes = Blueprint('user_routes', __name__)
 
 @user_routes.get('/admin/users')
 @login_required
-@require_perms('users:manage')
 def users_list():
     with engine.begin() as conn:
         rows = conn.execute(text("""
@@ -50,8 +49,14 @@ def users_list():
             ORDER BY username ASC
         """)).mappings().all()
 
+    users_sorted = sorted(rows, key=lambda u: (
+    0 if u['chief'] else (1 if u['supervisor'] else 2),
+    u['username'].lower()
+    ))
+
+
     # rows = db.session.execute(stmt).mappings().all()  # liefert RowMapping-Objekte
-    return render_template('users.html', users=rows, user=current_user)
+    return render_template('users.html', users=users_sorted)
 
 @user_routes.post('/admin/users/add')
 @login_required
@@ -69,9 +74,9 @@ def users_add():
     if role not in ROLES:
         flash(_('Ungültige Rolle.'))
         return redirect(url_for('user_routes.users_list'))
-    if len(pwd) < 8:
-        flash(_('Passwort muss mindestens 8 Zeichen haben.'))
-        return redirect(url_for('user_routes.users_list'))
+    #if len(pwd) < 8:
+    #    flash(_('Passwort muss mindestens 8 Zeichen haben.'))
+    #    return redirect(url_for('user_routes.users_list'))
     try:
         with engine.begin() as conn:
             conn.execute(text("""
@@ -209,9 +214,9 @@ def users_delete(uid: int):
 @require_csrf
 def users_reset_pw(uid: int):
     newpw = (request.form.get('password') or '').strip()
-    if len(newpw) < 8:
-        flash(_('Neues Passwort muss mindestens 8 Zeichen haben.'))
-        return redirect(url_for('user_routes.users_list'))
+    #if len(newpw) < 8:
+    #    flash(_('Neues Passwort muss mindestens 8 Zeichen haben.'))
+    #    return redirect(url_for('user_routes.users_list'))
     with engine.begin() as conn:
         conn.execute(text("UPDATE users SET password_hash=:ph, must_change_password=FALSE, updated_at=NOW() WHERE id=:id"),
                      {'ph': generate_password_hash(newpw), 'id': uid})

@@ -9,7 +9,10 @@ from flask_babel import Babel, gettext as _
 from datetime import datetime, date
 from decimal import Decimal, InvalidOperation
 from sqlalchemy import text
-
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
 from modules.core_utils import (
     engine
 )
@@ -321,3 +324,37 @@ def _fetch_existing_signature_set(conn) -> set[tuple]:
             (bem or '').strip().lower()
         ))
     return result
+
+def generate_attendance_pdf(dienst, jugendliche, interessenten, betreuer):
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+    story = []
+
+    story.append(Paragraph(f"Anwesenheitsliste – {dienst['datum'].strftime('%d.%m.%Y')}", styles['Title']))
+    story.append(Spacer(1, 12))
+
+    def table_for(title, data, columns):
+        story.append(Paragraph(title, styles['Heading2']))
+        table_data = [columns]
+        for r in data:
+            table_data.append([r.get('username') or r.get('name'), r.get('unit') or '-', 
+                               '✓' if r.get('anwesend') else '',
+                               '✓' if r.get('entschuldigt') else '',
+                               '✓' if r.get('unentschuldigt') else '',
+                               r.get('bemerkung') or '-'])
+        t = Table(table_data)
+        t.setStyle(TableStyle([
+            ('GRID', (0,0), (-1,-1), 0.5, colors.black),
+            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey)
+        ]))
+        story.append(t)
+        story.append(Spacer(1, 12))
+
+    table_for("Jugendliche", jugendliche, ["Name", "Einheit", "A", "E", "U", "Bemerkung"])
+    table_for("Interessenten", interessenten, ["Name", "Einheit", "A", "E", "U", "Bemerkung"])
+    table_for("Betreuer", betreuer, ["Name", "Einheit", "A", "E", "U", "Bemerkung"])
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
