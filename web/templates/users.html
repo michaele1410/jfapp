@@ -47,14 +47,31 @@
       </div>
     </form>
 
-    <div class="row mb-2">
-      <div class="col-md-3">
-        <input type="text" id="filterName" class="form-control" placeholder="Nach Mitglied filtern">
-      </div>
-      <div class="col-md-3">
-        <input type="text" id="filterUnit" class="form-control" placeholder="Nach Einheit filtern">
-      </div>
-    </div>
+   <div class="row mb-2">
+  <div class="col-md-3">
+    <input type="text" id="filterName" class="form-control" placeholder="Nach Mitglied filtern">
+  </div>
+  <div class="col-md-3">
+    <select id="filterUnit" class="form-select">
+      <option value="">Alle Einheiten</option>
+      <option value="Hückelhoven">Hückelhoven</option>
+      <option value="Ratheim">Ratheim</option>
+      <option value="Kleingladbach">Kleingladbach</option>
+      <option value="Millich">Millich</option>
+      <option value="Doveren">Doveren</option>
+      <option value="Baal">Baal</option>
+      <option value="Rurich">Rurich</option>
+      <option value="Hilfarth">Hilfarth</option>
+      <option value="Brachelen">Brachelen</option>
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button id="clearFilters" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-x-circle"></i> Filter leeren
+    </button>
+  </div>
+</div>
+
 
     <!-- Liste der Benutzer -->
     <div class="table-responsive">
@@ -68,7 +85,7 @@
             <th>{{ _('Aktiv') }}</th>
             <th>{{ _('Jugendwart') }}</th>
             <th>{{ _('Betreuer') }}</th>
-            <th>{{ _('Erstellt') }}</th>
+            <!--th>{{ _('Erstellt') }}</th-->
             <th class="text-end">{{ _('Aktionen') }}</th>
           </tr>
         </thead>
@@ -153,7 +170,7 @@
             </td>
 
             <!-- Erstellt -->
-            <td class="text-nowrap">{{ u.created_at and u.created_at.strftime('%d.%m.%Y %H:%M') or '—' }}</td>
+            <!--td class="text-nowrap">{{ u.created_at and u.created_at.strftime('%d.%m.%Y %H:%M') or '—' }}</td-->
 
             <!-- Aktualisiert-->
             <!--td class="text-nowrap">{{ u.updated_at and u.updated_at.strftime('%d.%m.%Y %H:%M') or '—' }}</td-->
@@ -205,6 +222,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   const filterName = document.getElementById('filterName');
   const filterUnit = document.getElementById('filterUnit');
+  const clearBtn = document.getElementById('clearFilters');
   const rows = document.querySelectorAll('table tbody tr');
 
   function applyFilters() {
@@ -214,13 +232,35 @@ document.addEventListener('DOMContentLoaded', function() {
     rows.forEach(row => {
       const nameCell = row.cells[0]?.innerText.toLowerCase() || '';
       const unitCell = row.cells[1]?.innerText.toLowerCase() || '';
-      const match = nameCell.includes(nameVal) && unitCell.includes(unitVal);
+      const match = nameCell.includes(nameVal) && (unitVal === '' || unitCell === unitVal);
       row.style.display = match ? '' : 'none';
     });
   }
 
   filterName.addEventListener('input', applyFilters);
-  filterUnit.addEventListener('input', applyFilters);
+  filterUnit.addEventListener('change', applyFilters);
+
+  clearBtn.addEventListener('click', function() {
+    filterName.value = '';
+    filterUnit.value = '';
+    applyFilters();
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const chiefBox = document.querySelector('input[name="chief"]');
+  const supervisorBox = document.querySelector('input[name="supervisor"]');
+
+  if (chiefBox && supervisorBox) {
+    chiefBox.addEventListener('change', function() {
+      if (this.checked) supervisorBox.checked = false;
+    });
+    supervisorBox.addEventListener('change', function() {
+      if (this.checked) chiefBox.checked = false;
+    });
+  }
 });
 </script>
 {% endblock %}

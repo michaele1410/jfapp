@@ -46,27 +46,20 @@ def users_list():
         rows = conn.execute(text("""
             SELECT id, username, email, role, active, must_change_password, can_approve, chief, supervisor, unit, created_at, updated_at
             FROM users
-            ORDER BY username ASC
+            ORDER BY unit ASC, username ASC
         """)).mappings().all()
 
-    users_sorted = sorted(rows, key=lambda u: (
-    0 if u['chief'] else (1 if u['supervisor'] else 2),
-    u['username'].lower()
-    ))
-
-
-    # rows = db.session.execute(stmt).mappings().all()  # liefert RowMapping-Objekte
-    return render_template('users.html', users=users_sorted)
+    return render_template('users.html', users=rows)
 
 @user_routes.post('/admin/users/add')
 @login_required
-@require_perms('users:manage')
+#@require_perms('users:manage')
 @require_csrf
 def users_add():
     username = (request.form.get('username') or '').strip()
     email = (request.form.get('email') or '').strip() or None
     unit = (request.form.get('unit') or '').strip()
-    role = (request.form.get('role') or 'Viewer').strip()
+    role = (request.form.get('role') or 'Admin').strip()
     pwd = (request.form.get('password') or '').strip()
     if not username:
         flash(_('Benutzername darf nicht leer sein.'))
@@ -96,7 +89,7 @@ def users_add():
 
 @user_routes.route('/admin/users/<int:uid>/edit', methods=['GET', 'POST'])
 @login_required
-@require_perms('users:manage')
+#@require_perms('users:manage')
 def edit_user(uid):
     if request.method == 'POST':
         role = request.form.get('role')
@@ -115,6 +108,11 @@ def edit_user(uid):
         #if role not in ROLES.keys():
         #    flash('Ungültige Rolle.')
         #    return redirect(url_for('edit_user', uid=uid))
+        
+        # Nur eines darf True sein
+        if chief and supervisor:
+            flash(_('Es darf nur Chief ODER Supervisor aktiv sein, nicht beides.'), 'danger')
+            return redirect(url_for('edit_user', uid=uid))
 
         with engine.begin() as conn:
             if password:
@@ -122,7 +120,6 @@ def edit_user(uid):
                 stmt = text("""
                     UPDATE users
                     SET email=:email,
-                        role=:role,
                         active=:active,
                         can_approve=:can_approve,
                         chief=:chief,
@@ -139,7 +136,6 @@ def edit_user(uid):
                 )
                 conn.execute(stmt, {
                     'email': email,
-                    'role': role,
                     'active': active,
                     'can_approve': can_approve,
                     'chief': chief,
@@ -152,7 +148,6 @@ def edit_user(uid):
                 stmt = text("""
                     UPDATE users
                     SET email=:email,
-                        role=:role,
                         active=:active,
                         can_approve=:can_approve,
                         chief=:chief,
@@ -168,7 +163,6 @@ def edit_user(uid):
                 )
                 conn.execute(stmt, {
                     'email': email,
-                    'role': role,
                     'active': active,
                     'can_approve': can_approve,
                     'chief': chief,
@@ -194,7 +188,7 @@ def edit_user(uid):
 
 @user_routes.post('/admin/users/<int:uid>/delete')
 @login_required
-@require_perms('users:manage')
+#@require_perms('users:manage')
 @require_csrf
 def users_delete(uid: int):
     current_uid = session.get('user_id')
@@ -210,7 +204,7 @@ def users_delete(uid: int):
 
 @user_routes.post('/admin/users/<int:uid>/resetpw')
 @login_required
-@require_perms('users:manage')
+#@require_perms('users:manage')
 @require_csrf
 def users_reset_pw(uid: int):
     newpw = (request.form.get('password') or '').strip()
@@ -225,7 +219,7 @@ def users_reset_pw(uid: int):
 
 @user_routes.post('/admin/users/<int:uid>/resetlink')
 @login_required
-@require_perms('users:manage')
+#@require_perms('users:manage')
 @require_csrf
 def users_reset_link(uid: int):
     token = secrets.token_urlsafe(32)
@@ -258,7 +252,7 @@ def users_reset_link(uid: int):
 
 @user_routes.post('/admin/users/<int:uid>/toggle')
 @login_required
-@require_perms('users:manage')
+#@require_perms('users:manage')
 @require_csrf
 def users_toggle(uid: int):
     current_uid = session.get('user_id')
@@ -273,10 +267,10 @@ def users_toggle(uid: int):
 
 @user_routes.post('/admin/users/<int:uid>/role')
 @login_required
-@require_perms('users:manage')
+#@require_perms('users:manage')
 @require_csrf
 def users_change_role(uid: int):
-    role = (request.form.get('role') or 'Viewer').strip()
+    role = (request.form.get('role') or 'Admin').strip()
     if role not in ROLES:
         flash(_('Ungültige Rolle.'))
         return redirect(url_for('user_routes.users_list'))

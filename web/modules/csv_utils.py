@@ -326,34 +326,73 @@ def _fetch_existing_signature_set(conn) -> set[tuple]:
     return result
 
 def generate_attendance_pdf(dienst, jugendliche, interessenten, betreuer):
+    """
+    Erzeugt eine PDF mit drei Tabellen (Jugendliche, Interessenten, Betreuer),
+    jeweils sortiert nach Einheit, dann nach Name. Unterstützt sowohl DB-User
+    (username, unit, anwesend/entschuldigt/unentschuldigt) als auch Interessenten
+    (name, loescheinheit, a/e/u).
+    """
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     styles = getSampleStyleSheet()
     story = []
 
-    story.append(Paragraph(f"Anwesenheitsliste – {dienst['datum'].strftime('%d.%m.%Y')}", styles['Title']))
+    # Titel
+    datum_txt = dienst['datum'].strftime('%d.%m.%Y') if dienst and dienst.get('datum') else ''
+    story.append(Paragraph(f"Anwesenheitsliste – {datum_txt}", styles['Title']))
     story.append(Spacer(1, 12))
 
-    def table_for(title, data, columns):
+    # --- Sortier-Keys ---
+    def _key_member(r):
+        unit = (r.get('unit') or '').strip().lower()
+        name = (r.get('username') or r.get('name') or '').strip().lower()
+        return (unit, name)
+
+    def _key_interessent(r):
+        unit = (r.get('unit') or r.get('loescheinheit') or '').strip().lower()
+        name = (r.get('name') or '').strip().lower()
+        return (unit, name)
+
+    jugendliche_sorted  = sorted(jugendliche or [],  key=_key_member)
+    betreuer_sorted     = sorted(betreuer or [],     key=_key_member)
+    interessenten_sorted= sorted(interessenten or [],key=_key_interessent)
+
+    # --- Hilfsfunktion für Tabelle ---
+    def table_for(title, data, is_interessent=False):
         story.append(Paragraph(title, styles['Heading2']))
-        table_data = [columns]
-        for r in data:
-            table_data.append([r.get('username') or r.get('name'), r.get('unit') or '-', 
-                               '✓' if r.get('anwesend') else '',
-                               '✓' if r.get('entschuldigt') else '',
-                               '✓' if r.get('unentschuldigt') else '',
-                               r.get('bemerkung') or '-'])
+
+        # Tabellenkopf
+        table_data = [["Name", "Einheit", "A", "E", "U", "Bemerkung"]]
+
+        for r in (data or []):
+            # Name
+            name_val = r.get('username') or r.get('name') or ''
+            # Einheit: Fallback für Interessenten (loescheinheit)
+            unit_val = r.get('unit') or r.get('loescheinheit') or '-'
+
+            # Status: DB-User (anwesend/entschuldigt/unentschuldigt)
+            #         Interessenten (a/e/u)
+            a_mark = '✓' if (r.get('anwesend') or r.get('a')) else ''
+            e_mark = '✓' if (r.get('entschuldigt') or r.get('e')) else ''
+            u_mark = '✓' if (r.get('unentschuldigt') or r.get('u')) else ''
+
+            bem = r.get('bemerkung') or '-'
+
+            table_data.append([name_val, unit_val, a_mark, e_mark, u_mark, bem])
+
         t = Table(table_data)
         t.setStyle(TableStyle([
             ('GRID', (0,0), (-1,-1), 0.5, colors.black),
-            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey)
+            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
+            ('ALIGN', (2,1), (4,-1), 'CENTER'),
         ]))
         story.append(t)
         story.append(Spacer(1, 12))
 
-    table_for("Jugendliche", jugendliche, ["Name", "Einheit", "A", "E", "U", "Bemerkung"])
-    table_for("Interessenten", interessenten, ["Name", "Einheit", "A", "E", "U", "Bemerkung"])
-    table_for("Betreuer", betreuer, ["Name", "Einheit", "A", "E", "U", "Bemerkung"])
+    # Tabellen erzeugen (je Gruppe)
+    table_for("Jugendliche", jugendliche_sorted)
+    table_for("Interessenten", interessenten_sorted, is_interessent=True)
+    table_for("Betreuer", betreuer_sorted)
 
     doc.build(story)
     buffer.seek(0)
