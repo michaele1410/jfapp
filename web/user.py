@@ -44,9 +44,9 @@ user_routes = Blueprint('user_routes', __name__)
 def users_list():
     with engine.begin() as conn:
         rows = conn.execute(text("""
-            SELECT id, username, email, role, active, must_change_password, can_approve, chief, supervisor, unit, created_at, updated_at
+            SELECT id, username, displayname, email, role, active, must_change_password, can_approve, chief, supervisor, unit, created_at, updated_at
             FROM users
-            ORDER BY unit ASC, username ASC
+            ORDER BY unit ASC, displayname ASC
         """)).mappings().all()
 
     return render_template('users.html', users=rows)
@@ -57,12 +57,13 @@ def users_list():
 @require_csrf
 def users_add():
     username = (request.form.get('username') or '').strip()
+    displayname = (request.form.get('displayname') or '').strip()
     email = (request.form.get('email') or '').strip() or None
     unit = (request.form.get('unit') or '').strip()
     role = (request.form.get('role') or 'Admin').strip()
     pwd = (request.form.get('password') or '').strip()
-    if not username:
-        flash(_('Benutzername darf nicht leer sein.'))
+    if not displayname:
+        flash(_('Displayname darf nicht leer sein.'))
         return redirect(url_for('user_routes.users_list'))
     if role not in ROLES:
         flash(_('Ungültige Rolle.'))
@@ -73,10 +74,11 @@ def users_add():
     try:
         with engine.begin() as conn:
             conn.execute(text("""
-                INSERT INTO users (username, email, password_hash, role, active, must_change_password, theme_preference, unit)
-                VALUES (:u, :e, :ph, :r, TRUE, TRUE, 'system', :unit)
+                INSERT INTO users (username, displayname, email, password_hash, role, active, must_change_password, theme_preference, unit)
+                VALUES (:u, :dn, :e, :ph, :r, TRUE, TRUE, 'system', :unit)
             """), {
                 'u': username,
+                'dn': displayname,
                 'e': email,
                 'ph': generate_password_hash(pwd),
                 'r': role,
@@ -94,6 +96,8 @@ def edit_user(uid):
     if request.method == 'POST':
         role = request.form.get('role')
         email = (request.form.get('email') or '').strip() or None
+        username = (request.form.get('username') or '').strip() or None
+        displayname = (request.form.get('displayname') or '').strip() or None
         unit = (request.form.get('unit') or '').strip()
 
         # Checkboxen -> bool (Checkbox sendet nur, wenn angehakt)
@@ -120,6 +124,8 @@ def edit_user(uid):
                 stmt = text("""
                     UPDATE users
                     SET email=:email,
+                        username=:username,
+                        displayname=:displayname
                         active=:active,
                         can_approve=:can_approve,
                         chief=:chief,
@@ -136,6 +142,8 @@ def edit_user(uid):
                 )
                 conn.execute(stmt, {
                     'email': email,
+                    'usernmae': username,
+                    'displaynem': displayname,
                     'active': active,
                     'can_approve': can_approve,
                     'chief': chief,
@@ -148,6 +156,8 @@ def edit_user(uid):
                 stmt = text("""
                     UPDATE users
                     SET email=:email,
+                        username=:username,
+                        displayname=:displayname,
                         active=:active,
                         can_approve=:can_approve,
                         chief=:chief,
@@ -163,6 +173,8 @@ def edit_user(uid):
                 )
                 conn.execute(stmt, {
                     'email': email,
+                    'username': username,
+                    'displayname': displayname,
                     'active': active,
                     'can_approve': can_approve,
                     'chief': chief,
@@ -177,7 +189,7 @@ def edit_user(uid):
     # GET-Teil
     with engine.begin() as conn:
         user = conn.execute(text("""
-            SELECT id, username, email, role, active, can_approve, chief, supervisor, unit
+            SELECT id, username, displayname, email, role, active, can_approve, chief, supervisor, unit
             FROM users
             WHERE id=:id
         """), {'id': uid}).mappings().first()

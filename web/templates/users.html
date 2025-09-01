@@ -8,8 +8,12 @@
     <form method="post" action="{{ url_for('user_routes.users_add') }}" class="row g-2 align-items-end mb-3">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="col-12 col-md-3">
-        <label class="form-label">{{ _('Mitglied') }}</label>
-        <input name="username" class="form-control" required>
+        <label class="form-label">{{ _('Username') }}</label>
+        <input name="username" class="form-control">
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label">{{ _('Displayname') }}</label>
+        <input name="displayname" class="form-control">
       </div>
       <div class="col-12 col-md-3">
         <label class="form-label">{{ _('E-Mail') }}</label>
@@ -94,7 +98,7 @@
           <tr>
             <!-- Benutzername + ID -->
             <td class="text-nowrap">
-              {{ u.username }}<br>
+              {{ u.displayname }}<br>
               <!--small class="text-muted">ID: {{ u.id }}</small-->
             </td>
 

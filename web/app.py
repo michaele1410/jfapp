@@ -291,6 +291,7 @@ CREATE TABLE IF NOT EXISTS entries (
 CREATE_TABLE_USERS = """
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
+    displayname TEXT NOT NULL,
     username TEXT UNIQUE NOT NULL,
     email TEXT,
     password_hash TEXT,
@@ -460,14 +461,15 @@ def migrate_columns(conn):
     conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_secret TEXT"))
     conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS totp_enabled BOOLEAN NOT NULL DEFAULT FALSE"))
     conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS backup_codes TEXT"))
-    conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS created_by INTEGER"))
-    conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW()"))
-    conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NOT NULL DEFAULT NOW()"))
+    conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS displayname TEXT"))
     conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS locale TEXT"))
     conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS timezone TEXT"))
     conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS theme_preference TEXT DEFAULT 'system'"))
     conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMP"))
     conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS can_approve BOOLEAN NOT NULL DEFAULT FALSE"))
+    conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS created_by INTEGER"))
+    conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW()"))
+    conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NOT NULL DEFAULT NOW()"))
     conn.execute(text("ALTER TABLE zahlungsantraege ADD COLUMN IF NOT EXISTS approver_snapshot JSONB"))
     
     try:
@@ -512,8 +514,8 @@ def init_db():
         if res == 0:
             conn.execute(text(
                 """
-                INSERT INTO users (username, password_hash, role, active, must_change_password)
-                VALUES (:u, :ph, 'Admin', TRUE, TRUE)
+                INSERT INTO users (username, displayname, password_hash, role, active, must_change_password)
+                VALUES (:u, 'Administrator', :ph, 'Admin', TRUE, TRUE)
                 """
             ), {'u': 'admin', 'ph': generate_password_hash('admin')})
 
@@ -597,12 +599,12 @@ def send_attendance_to_chiefs():
                 return redirect(request.referrer or url_for('bbalance_routes.index'))
 
             rows = conn.execute(text("""
-                SELECT u.username, u.unit, u.chief, u.supervisor,
+                SELECT u.displayname, u.unit, u.chief, u.supervisor,
                        a.anwesend, a.entschuldigt, a.unentschuldigt, a.bemerkung
                 FROM anwesenheit a
                 JOIN users u ON u.id = a.user_id
                 WHERE a.entry_id = :eid
-                ORDER BY u.username
+                ORDER BY u.displayname
             """), {'eid': dienst['id']}).mappings().all()
 
         interessenten = dienst['interessenten'] or []
@@ -626,7 +628,7 @@ def send_attendance_to_chiefs():
                     elif col == "Bemerkung":
                         html.append(f"<td>{r.get('bemerkung') or '-'}</td>")
                     elif col == "Mitglied":
-                        html.append(f"<td>{r.get('username')}</td>")
+                        html.append(f"<td>{r.get('displayname')}</td>")
                     elif col == "Name":
                         html.append(f"<td>{r.get('name')}</td>")
                     elif col == "Einheit":

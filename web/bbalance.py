@@ -205,6 +205,7 @@ def edit(entry_id: int):
         users = conn.execute(text("""
         SELECT u.id,
             u.username,
+            u.displayname,
             u.unit,
             u.supervisor,
             u.chief,
@@ -222,11 +223,11 @@ def edit(entry_id: int):
     # Gruppieren in Python
     jugendliche = sorted(
         [u for u in users if not u.supervisor and not u.chief],
-        key=lambda x: (x.unit or '', x.username or '')
+        key=lambda x: (x.unit or '', x.displayname or '')
     )
     betreuer = sorted(
         [u for u in users if u.supervisor or u.chief],
-        key=lambda x: (x.unit or '', x.username or '')
+        key=lambda x: (x.unit or '', x.displayname or '')
     )
 
 
