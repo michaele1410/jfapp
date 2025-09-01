@@ -581,6 +581,11 @@ def cleanup_temp():
 @require_csrf
 def send_attendance_to_chiefs():
     try:
+        entry_id = request.form.get('entry_id', type=int)
+        if not entry_id:
+            flash("Keine gültige entry_id übermittelt.", "warning")
+            return redirect(request.referrer or url_for('bbalance_routes.index'))
+
         with engine.begin() as conn:
             chiefs = conn.execute(text("""
                 SELECT email FROM users WHERE chief = TRUE AND email IS NOT NULL
@@ -591,8 +596,9 @@ def send_attendance_to_chiefs():
                 return redirect(request.referrer or url_for('bbalance_routes.index'))
 
             dienst = conn.execute(text("""
-                SELECT id, datum, interessenten FROM entries ORDER BY datum DESC LIMIT 1
-            """)).mappings().first()
+                SELECT id, datum, interessenten FROM entries WHERE id = :eid
+            """), {'eid': entry_id}).mappings().first()
+
 
             if not dienst:
                 flash("Kein Dienst gefunden.", "warning")

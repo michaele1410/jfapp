@@ -177,6 +177,9 @@ def add():
 @login_required
 def edit(entry_id: int):
     with engine.begin() as conn:
+        entry = conn.execute(text("""
+                    SELECT * FROM entries WHERE id = :eid
+                """), {'eid': entry_id}).mappings().first()
         # 1) Eintrag OHNE 'unit' selektieren (gibt es nicht in entries)
         row = conn.execute(text("""
             SELECT id, datum, vollgut, leergut, einnahme, ausgabe, bemerkung, titel, interessenten, created_by
@@ -263,6 +266,7 @@ def edit(entry_id: int):
 
     return render_template(
     'edit.html',
+        entry=entry,
         data=data,
         attachments=att_data,
         audit=audit,
