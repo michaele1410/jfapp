@@ -28,7 +28,7 @@ def current_user():
         return None
     with engine.begin() as conn:
         row = conn.execute(text("""
-                    SELECT id, username, email, role, active, must_change_password, totp_enabled,
+                    SELECT id, username, displayname, email, role, active, must_change_password, totp_enabled,
                         backup_codes, locale, timezone, theme_preference, can_approve, chief, supervisor, last_login_at
                     FROM users WHERE id=:id
                 """), {'id': uid}).mappings().first()

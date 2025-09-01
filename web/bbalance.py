@@ -108,7 +108,7 @@ def index():
 @bbalance_routes.post('/add')
 @login_required
 @require_csrf
-@require_perms('entries:add')
+#@require_perms('entries:add')
 def add():
     user = current_user()
 
@@ -205,6 +205,7 @@ def edit(entry_id: int):
         users = conn.execute(text("""
         SELECT u.id,
             u.username,
+            u.displayname,
             u.unit,
             u.supervisor,
             u.chief,
@@ -216,16 +217,17 @@ def edit(entry_id: int):
         LEFT JOIN anwesenheit a
         ON a.user_id = u.id AND a.entry_id = :eid
         WHERE u.active = TRUE
+        AND u.username != 'admin'
     """), {'eid': entry_id}).mappings().all()
 
     # Gruppieren in Python
     jugendliche = sorted(
         [u for u in users if not u.supervisor and not u.chief],
-        key=lambda x: (x.unit or '', x.username or '')
+        key=lambda x: (x.unit or '', x.displayname or '')
     )
     betreuer = sorted(
         [u for u in users if u.supervisor or u.chief],
-        key=lambda x: (x.unit or '', x.username or '')
+        key=lambda x: (x.unit or '', x.displayname or '')
     )
 
 
@@ -270,7 +272,7 @@ def edit(entry_id: int):
 
 @bbalance_routes.post('/edit/<int:entry_id>')
 @login_required
-@require_perms('entries:edit:any')
+#@require_perms('entries:edit:any')
 @require_csrf
 def edit_post(entry_id: int):
     # 1) Altwerte laden

@@ -1,9 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4">
-  <h2>Mitglied bearbeiten: {{ user.username }}</h2>
+  <h2>Mitglied bearbeiten: {{ user.displayname }}</h2>
   <form method="post">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <div class="mb-3">
+      <label class="form-label">Username</label>
+      <input type="username" name="username" class="form-control" value="{{ user.username or '' }}">
+    </div>
+    
+    <div class="mb-3">
+      <label class="form-label">Displayname</label>
+      <input type="displayname" name="displayname" class="form-control" value="{{ user.displayname or '' }}">
+    </div>
 
     <div class="mb-3">
       <label class="form-label">E-Mail</label>
@@ -29,15 +39,15 @@
         <select name="unit" id="unit" class="form-select">
           <option value="">Bitte wählen</option>
           {% set units = [
-            'Löscheinheit Hückelhoven',
-            'Löscheinheit Ratheim',
-            'Löscheinheit Kleingladbach',
-            'Löscheinheit Millich',
-            'Löscheinheit Doveren',
-            'Löscheinheit Baal',
-            'Löscheinheit Rurich',
-            'Löscheinheit Hilfarth',
-            'Löscheinheit Brachelen'
+            'Hückelhoven',
+            'Ratheim',
+            'Kleingladbach',
+            'Millich',
+            'Doveren',
+            'Baal',
+            'Rurich',
+            'Hilfarth',
+            'Brachelen'
           ] %}
           {% for uval in units %}
             <option value="{{ uval }}" {% if user.unit == uval %}selected{% endif %}>{{ uval }}</option>

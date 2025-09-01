@@ -6,8 +6,9 @@
       <div class="card-body">
         <div style="margin: 20px 0;">
           <form method="post" action="/send_attendance_to_chiefs">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-warning" style="font-weight: bold;">
-              Anwesenheitsliste an Chiefs senden
+              Anwesenheitsliste versenden
             </button>
           </form>
         </div>
@@ -25,61 +26,15 @@
           <div class="form-floating mb-3">
             <input class="form-control" id="titel" maxlength="500" name="titel" placeholder="{{ _('Titel') }}"
               value="{{ data.titel or '' }}" />
-            <label for="Titel">{{ _('Titel') }}</label>
+            <label for="titel">{{ _('Titel') }}</label>
           </div>
-          <!-- Vollgut -->
-          <!--div class="form-floating mb-3">
-            <input id="vollgut" name="vollgut" type="number" inputmode="numeric" min="0" step="1" class="form-control"
-              placeholder="0" autocomplete="off" value="{{ data.vollgut if data.vollgut is not none else '' }}">
-            <label for="vollgut">{{ _('Vollgut') }}</label>
-          </div-->
-          <!-- Leergut -->
-          <!--div class="form-floating mb-3">
-            <input id="leergut" name="leergut" type="number" inputmode="numeric" min="0" step="1" class="form-control"
-              placeholder="0" autocomplete="off" value="{{ data.leergut if data.leergut is not none else '' }}">
-            <label for="leergut">{{ _('Leergut') }}</label>
-          </div-->
-          <!-- Einnahme -->
-          <!--div class="input-group mb-3">
-            <span class="input-group-text">{{ _('waehrung') }}</span>
-            <div class="form-floating flex-grow-1">
-              <input name="einnahme" id="einnahme" type="number" step="0.01" inputmode="decimal" class="form-control"
-                placeholder="0.00" autocomplete="off"
-                value="{{ (data.einnahme|replace(',', '.') if data.einnahme is string else ('%.2f'|format(data.einnahme))) if data.einnahme is not none else '' }}">
-              <label for="einnahme">{{ _('Einnahme') }}</label>
-            </div>
-          </div-->
-          <!-- Ausgabe -->
-          <!--div class="input-group mb-3">
-            <span class="input-group-text">{{ _('waehrung') }}</span>
-            <div class="form-floating flex-grow-1">
-              <input name="ausgabe" id="ausgabe" type="number" step="0.01" inputmode="decimal" class="form-control"
-                placeholder="0.00" autocomplete="off"
-                value="{{ (data.ausgabe|replace(',', '.') if data.ausgabe is string else ('%.2f'|format(data.ausgabe))) if data.ausgabe is not none else '' }}">
-              <label for="ausgabe">{{ _('Ausgabe') }}</label>
-            </div>
-          </div-->
-          <!-- Bemerkung -->
           <div class="form-floating mb-3">
             <input class="form-control" id="bemerkung" maxlength="500" name="bemerkung"
               placeholder="{{ _('Bemerkung') }}" value="{{ data.bemerkung or '' }}" />
             <label for="bemerkung">{{ _('Bemerkung') }}</label>
           </div>
-          <!-- Bemerkung als Dropdown -->
-          <!--div class="form-floating mb-3">
-          <select id="bemerkung" name="bemerkung" class="form-select">
-            {% set found = false %}
-            {% for option in bemerkungsoptionen %}
-              {% if data.bemerkung == option %}
-                {% set found = true %}
-              {% endif %}
-              <option value="{{ option }}" {% if data.bemerkung == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-            {% if data.bemerkung and not found %}
-              <option value="{{ data.bemerkung }}" selected>{{ data.bemerkung }}</option>
-            {% endif %}
-          </select-->
-          <!--label for="bemerkung">{{ _('Bemerkung') }}</label-->
+
+          <!-- Anwesenheit Jugendliche -->
         <h5 class="mt-4">Anwesenheit – Jugendliche</h5>
 <table class="table table-sm table-bordered align-middle">
   <thead class="table-light">
@@ -95,16 +50,16 @@
   <tbody>
     {% for u in jugendliche %}
     <tr>
-      <td>{{ u.username }}</td>
+      <td>{{ u.displayname }}</td>
       <td>{{ u.unit }}</td>
       <td class="text-center">
-        <input type="checkbox" name="anwesenheit_{{ u.id }}_A" {% if u.anwesend %}checked{% endif %}>
+        <input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_A" {% if u.anwesend %}checked{% endif %}>
       </td>
       <td class="text-center">
-        <input type="checkbox" name="anwesenheit_{{ u.id }}_E" {% if u.entschuldigt %}checked{% endif %}>
+        <input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_E" {% if u.entschuldigt %}checked{% endif %}>
       </td>
       <td class="text-center">
-        <input type="checkbox" name="anwesenheit_{{ u.id }}_U" {% if u.unentschuldigt %}checked{% endif %}>
+        <input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_U" {% if u.unentschuldigt %}checked{% endif %}>
       </td>
       <td>
         <input type="text" name="bemerkung_{{ u.id }}" class="form-control" value="{{ u.bemerkung or '' }}">
@@ -113,6 +68,8 @@
     {% endfor %}
   </tbody>
 </table>
+
+          <!-- Anwesenheit Interessenten -->
 <h5 class="mt-5">Anwesenheit – Interessenten</h5>
   <table class="table table-sm table-bordered align-middle" id="interessenten-table">
     <thead class="table-light">
@@ -131,10 +88,17 @@
       {% set i = loop.index0 %}
       <tr>
         <td><input type="text" name="interessent_name_{{ i }}" value="{{ item.name }}" class="form-control"></td>
-        <td><input type="text" name="interessent_unit_{{ i }}" value="{{ item.loescheinheit }}" class="form-control"></td>
-        <td class="text-center"><input type="checkbox" name="interessent_a_{{ i }}" {% if item.a %}checked{% endif %}></td>
-        <td class="text-center"><input type="checkbox" name="interessent_e_{{ i }}" {% if item.e %}checked{% endif %}></td>
-        <td class="text-center"><input type="checkbox" name="interessent_u_{{ i }}" {% if item.u %}checked{% endif %}></td>
+        <td>
+          <select name="interessent_unit_{{ i }}" class="form-select">
+                    {% set einheiten = ['Hückelhoven','Ratheim','Hilfarth','Brachelen','Baal','Doveren','Kleingladbach','Schaufenberg'] %}
+            {% for einheit in einheiten %}
+              <option value="{{ einheit }}" {% if item.loescheinheit == einheit %}selected{% endif %}>{{ einheit }}</option>
+            {% endfor %}
+          </select>
+        </td>
+                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_{{ i }}" name="interessent_a_{{ i }}" {% if item.a %}checked{% endif %}></td>
+                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_{{ i }}" name="interessent_e_{{ i }}" {% if item.e %}checked{% endif %}></td>
+                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_{{ i }}" name="interessent_u_{{ i }}" {% if item.u %}checked{% endif %}></td>
         <td><input type="text" name="interessent_bemerkung_{{ i }}" value="{{ item.bemerkung }}" class="form-control"></td>
         <td><button type="button" class="btn btn-sm btn-danger remove-row">✖</button></td>
       </tr>
@@ -143,7 +107,7 @@
   </table>
 <button type="button" class="btn btn-sm btn-outline-primary" id="add-interessent">+ Interessent hinzufügen</button>
 
-
+          <!-- Anwesenheit Betreuer -->
 <h5 class="mt-5">Anwesenheit – Betreuer</h5>
 <table class="table table-sm table-bordered align-middle">
   <thead class="table-light">
@@ -159,204 +123,75 @@
   <tbody>
     {% for u in betreuer %}
     <tr>
-      <td>{{ u.username }}</td>
+      <td>{{ u.displayname }}</td>
       <td>{{ u.unit }}</td>
-      <td class="text-center">
-        <input type="checkbox" name="anwesenheit_{{ u.id }}_A" {% if u.anwesend %}checked{% endif %}>
-      </td>
-      <td class="text-center">
-        <input type="checkbox" name="anwesenheit_{{ u.id }}_E" {% if u.entschuldigt %}checked{% endif %}>
-      </td>
-      <td class="text-center">
-        <input type="checkbox" name="anwesenheit_{{ u.id }}_U" {% if u.unentschuldigt %}checked{% endif %}>
-      </td>
-      <td>
-                  <input class="form-control" name="bemerkung_{{ u.id }}" type="text" value="{{ u.bemerkung or '' }}" />
-      </td>
+                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_A" {% if u.anwesend %}checked{% endif %}></td>
+                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_E" {% if u.entschuldigt %}checked{% endif %}></td>
+                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_U" {% if u.unentschuldigt %}checked{% endif %}></td>
+                <td><input class="form-control" name="bemerkung_{{ u.id }}" type="text" value="{{ u.bemerkung or '' }}"></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-        </form>
-        </div>
-          <div class="col-12 d-flex gap-2">
+<div class="col-12 d-flex gap-2">
             <a class="btn btn-outline-secondary" href="{{ url_for('bbalance_routes.index') }}">{{ _('Abbrechen') }}</a>
             <button class="btn btn-primary" form="transaction-form">{{ _('Speichern') }}</button>
           </div>
-
-        <!--hr class="my-4">
-        <h3 class="h6 mb-3">{{ _('Anhänge') }}</h3>
-
-        <form action="{{ url_for('attachments_routes.attachments_upload', entry_id=data.id) }}" method="post"
-          enctype="multipart/form-data" class="mb-3">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <div class="input-group">
-            <input class="form-control" type="file" name="files" multiple
-              accept=".pdf,.png,.jpg,.jpeg,.gif,.webp,.heic,.heif,.svg,.txt,.csv,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.xml,.json">
-            <button class="btn btn-outline-primary" type="submit">
-              <i class="bi-upload me-1"></i> {{ _('Hochladen') }}
-            </button>
-          </div>
-          <div class="form-text">
-            {{ _('Zulässige Formate:') }} PDF, Bilder, Office, Text. {{ _('Mehrere Dateien möglich.') }}
-          </div>
         </form>
-
-        <div class="list-group mb-3" id="editAttachmentsList">
-          {% if attachments %}
-          {% for att in attachments %}
-          <div class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="text-truncate" style="max-width: 70%;">
-              <i class="bi bi-paperclip me-1"></i>
-              <a href="{{ att.url }}" target="_blank">{{ att.name }}</a>
-              <small class="text-muted">({{ att.size }} Bytes)</small>
-              <a href="{{ att.view_url }}" target="_blank" class="btn btn-sm btn-outline-primary">Ansehen</a>
-            </div>
-            <form method="post" action="{{ url_for('attachments_routes.attachments_delete', att_id=att.id) }}"
-              onsubmit="return confirm('{{ _('Anhang wirklich löschen?') }}');">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button class="btn btn-sm btn-outline-danger">{{ _('Löschen') }}</button>
-            </form>
-          </div>
-          {% endfor %}
-          {% else %}
-          <div class="list-group-item text-muted">{{ _('Keine Anhänge vorhanden.') }}</div>
-          {% endif %}
-        </div>
-        <h5 class="mt-5">Audit-Historie</h5>
-        <table class="table table-sm table-striped align-middle">
-          <thead>
-            <tr>
-              <th>Zeitpunkt</th>
-              <th>Aktion</th>
-              <th>Benutzer</th>
-              <th>Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for a in audit %}
-            <tr>
-              <td>{{ a.created_at.strftime('%d.%m.%Y %H:%M:%S') if a.created_at else '' }}</td>
-              <td>{{ a.action }}</td>
-              <td>{{ a.username or 'Unbekannt' }}</td>
-              <td>{{ (a.detail or '')|replace('\n', '<br>')|safe }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
       </div>
     </div>
   </div>
-</div-->
+</div>
 {% endblock %}
+
 {% block scripts %}
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    function isDark() {
-      return document.documentElement.getAttribute('data-bs-theme') === 'dark';
-    }
-    function toggleCalendarDark(calEl, dark) {
-      if (!calEl) return;
-      calEl.classList.toggle('flatpickr-dark', !!dark);
-    }
-    if (window.flatpickr) {
-      if (flatpickr.l10ns?.de) flatpickr.localize(flatpickr.l10ns.de);
-      const fp = flatpickr('#datum', {
-        allowInput: true,
-        dateFormat: 'd.m.Y',
-        clickOpens: true,
-        disableMobile: false,
-        onOpen: (selectedDates, dateStr, instance) => {
-          toggleCalendarDark(instance.calendarContainer, isDark());
-        }
-      });
-      const themeObserver = new MutationObserver(() => {
-        const dark = isDark();
-        document.querySelectorAll('.flatpickr-calendar').forEach(c => toggleCalendarDark(c, dark));
-      });
-      themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
-    }
-
-    const form = document.getElementById('transaction-form');
-    if (form) {
-      form.addEventListener('submit', (event) => {
-        if (!form.checkValidity()) {
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        form.classList.add('was-validated');
-      }, false);
-    }
-  });
-</script>
-<script>
-  document.addEventListener('DOMContentLoaded', async () => {
-    const entryId = {{ data.id }};
-  const listGroup = document.getElementById('editAttachmentsList');
-  try {
-    const resp = await fetch(`/attachments/${entryId}/list`);
-    const attachments = await resp.json();
-
-    listGroup.innerHTML = '';
-
-    if (!attachments || attachments.length === 0) {
-      listGroup.innerHTML = `<div class="list-group-item text-muted">Keine Anhänge vorhanden.</div>`;
-      return;
-    }
-
-    attachments.forEach(att => {
-      const item = document.createElement('div');
-      item.className = 'list-group-item d-flex justify-content-between align-items-center';
-
-      const deleteUrl = `/attachments/${att.id}/delete`;
-
-      item.innerHTML = `
-        <div class="text-truncate" style="max-width: 70%;">
-          <i class="bi bi-paperclip me-1"></i>
-          <a href="${att.url}" target="_blank">${att.name}</a>
-          <small class="text-muted">(${att.size} Bytes)</small>
-          <a href="${att.view_url}" target="_blank" class="btn btn-sm btn-outline-primary">Ansehen</a>
-        </div>
-        <form method="post" action="${deleteUrl}" onsubmit="return confirm('Anhang wirklich löschen?');">
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <button class="btn btn-sm btn-outline-danger">Löschen</button>
-        </form>
-      `;
-
-      listGroup.appendChild(item);
+document.addEventListener('DOMContentLoaded', function() {
+  function enforceSingleSelection(container) {
+    container.addEventListener('change', function(e) {
+      if (e.target.classList.contains('anwesenheit') && e.target.checked) {
+        const userId = e.target.dataset.user;
+        container.querySelectorAll('.anwesenheit[data-user="' + userId + '"]').forEach(function(cb) {
+          if (cb !== e.target) cb.checked = false;
+        });
+      }
     });
-  } catch (e) {
-    console.error('Fehler beim Laden der Anhänge:', e);
-    listGroup.innerHTML = `<div class="list-group-item text-danger">Fehler beim Laden der Anhänge.</div>`;
-  }});
-</script>
+  }
+  enforceSingleSelection(document);
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const tableBody = document.getElementById('interessenten-table').querySelector('tbody');
+  const tableBody = document.querySelector('#interessenten-table tbody');
   const addBtn = document.getElementById('add-interessent');
   let index = {{ (data.interessenten|length) if data.interessenten else 0 }};
+  const einheiten = ['Hückelhoven','Ratheim','Hilfarth','Brachelen','Baal','Doveren','Kleingladbach','Schaufenberg'];
 
-  addBtn.addEventListener('click', () => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td><input type="text" name="interessent_name_${index}" class="form-control"></td>
-      <td><input type="text" name="interessent_unit_${index}" class="form-control"></td>
-      <td class="text-center"><input type="checkbox" name="interessent_a_${index}"></td>
-      <td class="text-center"><input type="checkbox" name="interessent_e_${index}"></td>
-      <td class="text-center"><input type="checkbox" name="interessent_u_${index}"></td>
-      <td><input type="text" name="interessent_bemerkung_${index}" class="form-control"></td>
-      <td><button type="button" class="btn btn-sm btn-danger remove-row">✖</button></td>
-    `;
-    tableBody.appendChild(row);
-    index++;
-  });
+  function createEinheitDropdown(name) {
+    return '<select name="' + name + '" class="form-select">' +
+      einheiten.map(e => '<option value="' + e + '">' + e + '</option>').join('') +
+      '</select>';
+  }
 
-  tableBody.addEventListener('click', (e) => {
-    if (e.target.classList.contains('remove-row')) {
-      e.target.closest('tr').remove();
-    }
-  });
+  if (addBtn && tableBody) {
+    addBtn.addEventListener('click', () => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td><input type="text" name="interessent_name_${index}" class="form-control"></td>
+        <td>${createEinheitDropdown("interessent_unit_" + index)}</td>
+        <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_${index}" name="interessent_a_${index}"></td>
+        <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_${index}" name="interessent_e_${index}"></td>
+        <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_${index}" name="interessent_u_${index}"></td>
+        <td><input type="text" name="interessent_bemerkung_${index}" class="form-control"></td>
+        <td><button type="button" class="btn btn-sm btn-danger remove-row">✖</button></td>
+      `;
+      tableBody.appendChild(row);
+      index++;
+    });
+
+    tableBody.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-row')) {
+        e.target.closest('tr').remove();
+      }
+    });
+  }
 });
 </script>
 {% endblock %}

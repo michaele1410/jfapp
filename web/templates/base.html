@@ -31,7 +31,7 @@
       <span class="logo-wrapper">
         <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Logo" class="logo-img">
       </span>
-      <span>{{ _('BottleBalance') }}{% if session.get('user_id') %}, {{ current_user().username|capitalize }}{% endif %}</span>
+      <span>{{ _('BottleBalance') }}{% if session.get('user_id') %}, {{ current_user().displayname|capitalize }}{% endif %}</span>
     </a>
 
     {% if session.get('user_id') %}
