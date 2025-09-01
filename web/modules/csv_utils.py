@@ -345,7 +345,7 @@ def generate_attendance_pdf(dienst, jugendliche, interessenten, betreuer):
     # --- Sortier-Keys ---
     def _key_member(r):
         unit = (r.get('unit') or '').strip().lower()
-        name = (r.get('username') or r.get('name') or '').strip().lower()
+        name = (r.get('displayname') or r.get('name') or '').strip().lower()
         return (unit, name)
 
     def _key_interessent(r):
@@ -366,7 +366,7 @@ def generate_attendance_pdf(dienst, jugendliche, interessenten, betreuer):
 
         for r in (data or []):
             # Name
-            name_val = r.get('username') or r.get('name') or ''
+            name_val = r.get('displayname') or r.get('name') or ''
             # Einheit: Fallback für Interessenten (loescheinheit)
             unit_val = r.get('unit') or r.get('loescheinheit') or '-'
 
