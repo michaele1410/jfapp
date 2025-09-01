@@ -177,6 +177,9 @@ def add():
 @login_required
 def edit(entry_id: int):
     with engine.begin() as conn:
+        entry = conn.execute(text("""
+                    SELECT * FROM entries WHERE id = :eid
+                """), {'eid': entry_id}).mappings().first()
         # 1) Eintrag OHNE 'unit' selektieren (gibt es nicht in entries)
         row = conn.execute(text("""
             SELECT id, datum, vollgut, leergut, einnahme, ausgabe, bemerkung, titel, interessenten, created_by
@@ -194,7 +197,7 @@ def edit(entry_id: int):
 
         # 3) Audit
         audit = conn.execute(text("""
-            SELECT a.id, a.user_id, u.username, a.action, a.created_at, a.detail
+            SELECT a.id, a.user_id, u.username, displayname, a.action, a.created_at, a.detail
             FROM audit_log a
             LEFT JOIN users u ON u.id = a.user_id
             WHERE a.entry_id = :id
@@ -203,33 +206,34 @@ def edit(entry_id: int):
 
         # 4) Users + Anwesenheit  ✅ hier u.unit selektieren
         users = conn.execute(text("""
-        SELECT u.id,
-            u.username,
-            u.displayname,
-            u.unit,
-            u.supervisor,
-            u.chief,
-            a.anwesend,
-            a.entschuldigt,
-            a.unentschuldigt,
-            a.bemerkung
-        FROM users u
-        LEFT JOIN anwesenheit a
-        ON a.user_id = u.id AND a.entry_id = :eid
-        WHERE u.active = TRUE
-        AND u.username != 'admin'
-    """), {'eid': entry_id}).mappings().all()
+            SELECT u.id,
+                u.username,
+                u.displayname,
+                u.unit,
+                u.supervisor,
+                u.chief,
+                a.anwesend,
+                a.entschuldigt,
+                a.unentschuldigt,
+                a.bemerkung
+            FROM users u
+            LEFT JOIN anwesenheit a
+            ON a.user_id = u.id AND a.entry_id = :eid
+            WHERE u.active = TRUE
+            AND COALESCE(u.displayname, '') != ''
+            AND u.id != 1
+        """), {'eid': entry_id}).mappings().all()
 
     # Gruppieren in Python
     jugendliche = sorted(
-        [u for u in users if not u.supervisor and not u.chief],
-        key=lambda x: (x.unit or '', x.displayname or '')
-    )
-    betreuer = sorted(
-        [u for u in users if u.supervisor or u.chief],
+        [u for u in users if not bool(u.supervisor) and not bool(u.chief)],
         key=lambda x: (x.unit or '', x.displayname or '')
     )
 
+    betreuer = sorted(
+        [u for u in users if bool(u.supervisor) or bool(u.chief)],
+        key=lambda x: (x.unit or '', x.displayname or '')
+    )
 
     if not row:
         flash(_('Eintrag nicht gefunden.'))
@@ -262,6 +266,7 @@ def edit(entry_id: int):
 
     return render_template(
     'edit.html',
+        entry=entry,
         data=data,
         attachments=att_data,
         audit=audit,
