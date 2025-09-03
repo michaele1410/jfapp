@@ -142,8 +142,8 @@ def edit_user(uid):
                 )
                 conn.execute(stmt, {
                     'email': email,
-                    'usernmae': username,
-                    'displaynem': displayname,
+                    'username': username,
+                    'displayname': displayname,
                     'active': active,
                     'can_approve': can_approve,
                     'chief': chief,
@@ -164,7 +164,7 @@ def edit_user(uid):
                         supervisor=:supervisor,
                         unit=:unit,
                         updated_at=NOW()
-                    WHERE id=:id
+                    WHERE id=:idü
                 """).bindparams(
                     bindparam('active', type_=Boolean()),
                     bindparam('can_approve', type_=Boolean()),
