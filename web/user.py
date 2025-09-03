@@ -125,7 +125,7 @@ def edit_user(uid):
                     UPDATE users
                     SET email=:email,
                         username=:username,
-                        displayname=:displayname
+                        displayname=:displayname,
                         active=:active,
                         can_approve=:can_approve,
                         chief=:chief,
