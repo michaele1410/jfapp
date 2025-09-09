@@ -164,7 +164,7 @@ def edit_user(uid):
                         supervisor=:supervisor,
                         unit=:unit,
                         updated_at=NOW()
-                    WHERE id=:idü
+                    WHERE id=:id
                 """).bindparams(
                     bindparam('active', type_=Boolean()),
                     bindparam('can_approve', type_=Boolean()),

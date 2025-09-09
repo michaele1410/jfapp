@@ -78,6 +78,7 @@ def fetch_entries(
              e.ausgabe,
              e.bemerkung,
              e.titel,
+             e.gruppe,
              e.created_by,
              COALESCE(a.cnt, 0) AS attachment_count
          FROM entries e
@@ -111,6 +112,7 @@ def fetch_entries(
             'ausgabe': aus,
             'bemerkung': r['bemerkung'] or '',
             'titel': r['titel'] or '',
+            'gruppe': r['gruppe'] or '',
             'inventar': inventar,
             'kassenbestand': kassenbestand,
             'created_by': r['created_by'],

@@ -115,7 +115,7 @@ def check_smtp_configuration():
 
         # UTF-8-kodierte Test-E-Mail senden
         message = (
-            "Subject: SMTP-Test von BottleBalance\r\n"
+            "Subject: SMTP-Test von JFApp\r\n"
             "Content-Type: text/plain; charset=utf-8\r\n"
             "\r\n"
             "Dies ist eine automatische Testnachricht zum Überprüfen der SMTP-Konfiguration. Enthält Umlaute wie Ü, Ä, Ö und ß."

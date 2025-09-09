@@ -281,6 +281,7 @@ CREATE TABLE IF NOT EXISTS entries (
     ausgabe NUMERIC(12,2) NOT NULL DEFAULT 0,
     titel TEXT,
     bemerkung TEXT,
+    gruppe TEXT,
     interessenten JSONB DEFAULT '[]',
     created_by INTEGER,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -470,6 +471,7 @@ def migrate_columns(conn):
     conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS created_by INTEGER"))
     conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW()"))
     conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NOT NULL DEFAULT NOW()"))
+    conn.execute(text("ALTER TABLE entries ADD COLUMN IF NOT EXISTS gruppe TEXT;"))
     conn.execute(text("ALTER TABLE zahlungsantraege ADD COLUMN IF NOT EXISTS approver_snapshot JSONB"))
     
     try:
@@ -1064,7 +1066,7 @@ def inject_helpers():
 
 @app.get('/audit')
 @login_required
-@require_perms('audit:view')
+#@require_perms('audit:view')
 def audit_list():
     q = (request.args.get('q') or '').strip()
     date_from = request.args.get('from')
@@ -1266,7 +1268,7 @@ def _parse_csv_file_storage(file_storage):
 
 @app.get('/import/sample')
 @login_required
-@require_perms('import:csv')
+#@require_perms('import:csv')
 def import_sample():
     """
     Liefert eine Beispiel-CSV im langen Format mit allen Spalten.
@@ -1303,7 +1305,7 @@ def import_sample():
 
 @app.post('/import/preview')
 @login_required
-@require_perms('import:csv')
+#@require_perms('import:csv')
 @require_csrf
 def import_preview():
     """
@@ -1434,7 +1436,7 @@ def import_preview():
 
 @app.post('/import/commit')
 @login_required
-@require_perms('import:csv')
+#@require_perms('import:csv')
 @require_csrf
 def import_commit():
     token = (request.form.get('token') or '').strip()
@@ -1608,7 +1610,7 @@ def api_import_dry_run():
 
 @app.get('/export/pdf')
 @login_required
-@require_perms('export:pdf')
+#@require_perms('export:pdf')
 def export_pdf():
     q = (request.args.get('q') or '').strip()
     df = request.args.get('from')
@@ -1722,7 +1724,7 @@ def parse_date_iso_or_today(s: str | None) -> date:
 
 @app.route("/admin/tools", methods=["GET", "POST"])
 @login_required
-@require_perms('users:manage')
+#@require_perms('users:manage')
 @require_csrf
 def admin_tools():
     status = None

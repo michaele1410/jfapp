@@ -277,13 +277,13 @@ textarea#options {
 .table th, .table td { white-space: nowrap; }
 
 /* =========================================
-   Mobile Tabellen → Kartenansicht
+   Mobile Tabellen → Kartenansicht (nur bei .kartenansicht)
    ========================================= */
 @media (max-width: 576px) {
-  .table thead {
-    display: none; /* Tabellenkopf ausblenden */
+  .kartenansicht .table thead {
+    display: none;
   }
-  .table tbody tr {
+  .kartenansicht .table tbody tr {
     display: block;
     margin-bottom: 1rem;
     border: 1px solid #dee2e6;
@@ -292,18 +292,23 @@ textarea#options {
     background-color: var(--bg-color);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
-  .table tbody tr td {
+  .kartenansicht .table tbody tr td {
     display: flex;
     justify-content: space-between;
     padding: .35rem 0;
     font-size: .9rem;
     border: none !important;
   }
-  .table tbody tr td::before {
+  .kartenansicht .table tbody tr td::before {
     content: attr(data-label);
     font-weight: 600;
     color: #495057;
     flex: 0 0 45%;
     text-align: left;
+  }
+  td[data-label="Displayname"] {
+    min-width: 120px;
+    white-space: normal;
+    word-break: break-word;
   }
 }

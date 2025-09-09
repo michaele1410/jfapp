@@ -109,7 +109,7 @@ def send_new_request_notifications(antrag_id: int, approver_emails: list[str]) -
         f"Hallo,\n\n"
         f"es wurde soeben ein neuer Zahlungsfreigabe-Antrag (#{antrag_id}) erstellt.\n"
         f"Zur Prüfung/Freigabe:\n{link}\n\n"
-        f"Viele Grüße\nBottleBalance"
+        f"Viele Grüße\nJFApp"
     )
 
     host = os.getenv("SMTP_HOST")

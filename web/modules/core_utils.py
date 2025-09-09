@@ -11,8 +11,8 @@ from sqlalchemy.engine import Engine, create_engine
 APP_BASE_URL = os.getenv("APP_BASE_URL") or "http://localhost:5000"
 
 SECRET_KEY = os.getenv("SECRET_KEY") or secrets.token_hex(24)
-DB_HOST = os.getenv("DB_HOST", "bottlebalance-db")
-DB_NAME = os.getenv("DB_NAME", "bottlebalance")
+DB_HOST = os.getenv("DB_HOST", "jfapp-db")
+DB_NAME = os.getenv("DB_NAME", "jfapp")
 DB_USER = os.getenv("DB_USER", "admin")
 DB_PASS = os.getenv("DB_PASS", "admin")
 DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:5432/{DB_NAME}"
