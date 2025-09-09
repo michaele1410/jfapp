@@ -51,10 +51,13 @@
       </div>
     </form>
 
-   <div class="row mb-2">
+  <div class="row mb-2 align-items-center g-2">
+  <!-- Filter nach Name -->
   <div class="col-md-3">
     <input type="text" id="filterName" class="form-control" placeholder="Nach Mitglied filtern">
   </div>
+
+  <!-- Filter nach Einheit -->
   <div class="col-md-3">
     <select id="filterUnit" class="form-select">
       <option value="">Alle Einheiten</option>
@@ -69,13 +72,24 @@
       <option value="Brachelen">Brachelen</option>
     </select>
   </div>
-  <div class="col-md-2">
+
+  <!-- Checkbox: Deaktivierte anzeigen (ohne Reload) -->
+  <div class="col-md-3">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="showInactive">
+      <label class="form-check-label" for="showInactive">
+        Deaktivierte anzeigen
+      </label>
+    </div>
+  </div>
+
+  <!-- Filter zurücksetzen -->
+  <div class="col-md-3 text-md-end">
     <button id="clearFilters" class="btn btn-outline-secondary btn-sm">
       <i class="bi bi-x-circle"></i> Filter leeren
     </button>
   </div>
 </div>
-
 
     <!-- Liste der Benutzer -->
     <div class="table-responsive kartenansicht">
@@ -95,7 +109,8 @@
         </thead>
         <tbody>
           {% for u in users %}
-          <tr>
+          
+        <tr data-name="{{ (u.displayname or '')|lower }}" data-unit="{{ (u.unit or '')|lower }}" data-active="{{ 1 if u.active else 0 }}">
             <!-- Benutzername + ID -->
             <td class="text-nowrap" data-label="Displayname">
               {{ u.displayname }}<br>
@@ -127,18 +142,37 @@
             <td data-label="Aktiv">
               <form method="post" action="{{ url_for('user_routes.users_toggle', uid=u.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                {% if u.active and current_user.id != u.id %}
-                <button class="btn btn-sm btn-outline-secondary" title="{{ _('Deaktivieren') }}">
-                  <i class="bi bi-toggle-on me-1"></i>{{ _('Deaktivieren') }}
-                </button>
+
+                {# Eigene Zeile? -> Deaktivieren nicht erlauben, Button deaktiviert anzeigen oder ausblenden #}
+                {% if u.id == current_user.id %}
+                  {# Variante A: deaktivierten Button anzeigen (klarer Hinweis) #}
+                  {% if u.active %}
+                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled
+                            title="{{ _('Du kannst dich nicht selbst deaktivieren.') }}">
+                      <i class="bi bi-toggle-on me-1"></i>{{ _('Deaktivieren') }}
+                    </button>
+                  {% else %}
+                    <button type="button" class="btn btn-sm btn-outline-success" disabled
+                            title="{{ _('Du kannst dich nicht selbst aktivieren/deaktivieren.') }}">
+                      <i class="bi bi-toggle-off me-1"></i>{{ _('Aktivieren') }}
+                    </button>
+                  {% endif %}
+
+                  {# Variante B (Alternative): Stattdessen gar keinen Button zeigen
+                  <span class="text-muted">—</span>
+                  #}
+
+                {% elif u.active %}
+                  <button type="submit" class="btn btn-sm btn-outline-secondary" title="{{ _('Deaktivieren') }}">
+                    <i class="bi bi-toggle-on me-1"></i>{{ _('Deaktivieren') }}
+                  </button>
                 {% else %}
-                <button class="btn btn-sm btn-outline-success" title="{{ _('Aktivieren') }}">
-                  <i class="bi bi-toggle-off me-1"></i>{{ _('Aktivieren') }}
-                </button>
+                  <button type="submit" class="btn btn-sm btn-outline-success" title="{{ _('Aktivieren') }}">
+                    <i class="bi bi-toggle-off me-1"></i>{{ _('Aktivieren') }}
+                  </button>
                 {% endif %}
               </form>
             </td>
-
             <!-- Geschäftsführend (can_approve) -->
             <td data-label="Jugendwart">
               <form method="post" action="{{ url_for('users_toggle_chief', uid=u.id) }}" class="d-inline">
@@ -224,39 +258,91 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const filterName = document.getElementById('filterName');
-  const filterUnit = document.getElementById('filterUnit');
-  const clearBtn = document.getElementById('clearFilters');
-  const rows = document.querySelectorAll('table tbody tr');
+  'use strict';
 
+  // ---- UI-Elemente
+  const filterName   = document.getElementById('filterName');
+  const filterUnit   = document.getElementById('filterUnit');
+  const showInactive = document.getElementById('showInactive');
+  const clearBtn     = document.getElementById('clearFilters');
+
+  // ---- Rows
+  const rows = Array.from(document.querySelectorAll('table tbody tr'));
+
+  // ---- Helper: Text normalisieren (klein + ohne Akzente)
+  const norm = (s) => (s || '')
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+  // ---- Persistenz in localStorage
+  const LS_KEYS = {
+    name:  'jfapp_filterName',
+    unit:  'jfapp_filterUnit',
+    inact: 'jfapp_showInactive'
+  };
+  const loadState = () => {
+    if (filterName)   filterName.value   = localStorage.getItem(LS_KEYS.name) || '';
+    if (filterUnit)   filterUnit.value   = localStorage.getItem(LS_KEYS.unit) || '';
+    if (showInactive) showInactive.checked = (localStorage.getItem(LS_KEYS.inact) === '1');
+  };
+  const saveState = () => {
+    if (filterName)   localStorage.setItem(LS_KEYS.name,  filterName.value || '');
+    if (filterUnit)   localStorage.setItem(LS_KEYS.unit,  filterUnit.value || '');
+    if (showInactive) localStorage.setItem(LS_KEYS.inact, showInactive.checked ? '1' : '0');
+  };
+
+  // ---- Filter anwenden
   function applyFilters() {
-    const nameVal = filterName.value.toLowerCase();
-    const unitVal = filterUnit.value.toLowerCase();
+    const nameVal   = norm(filterName?.value || '');
+    const unitVal   = norm(filterUnit?.value || '');
+    const allowInac = !!(showInactive?.checked);
 
     rows.forEach(row => {
-      const nameCell = row.cells[0]?.innerText.toLowerCase() || '';
-      const unitCell = row.cells[1]?.innerText.toLowerCase() || '';
-      const match = nameCell.includes(nameVal) && (unitVal === '' || unitCell === unitVal);
-      row.style.display = match ? '' : 'none';
+      const rName   = norm(row.dataset.name);
+      const rUnit   = norm(row.dataset.unit);
+      const rActive = row.dataset.active === '1';
+
+      const nameOk  = !nameVal || rName.includes(nameVal);
+      const unitOk  = !unitVal || rUnit === unitVal;
+      const actOk   = allowInac ? true : rActive;  // wenn nicht gesetzt -> nur aktive
+
+      const show = nameOk && unitOk && actOk;
+      row.style.display = show ? '' : 'none';
     });
   }
 
-  filterName.addEventListener('input', applyFilters);
-  filterUnit.addEventListener('change', applyFilters);
+  // ---- Events
+  loadState();
+  applyFilters();
 
-  clearBtn.addEventListener('click', function() {
-    filterName.value = '';
-    filterUnit.value = '';
-    applyFilters();
-  });
+  if (filterName) {
+    filterName.addEventListener('input', () => { saveState(); applyFilters(); });
+  }
+  if (filterUnit) {
+    filterUnit.addEventListener('change', () => { saveState(); applyFilters(); });
+  }
+  if (showInactive) {
+    showInactive.addEventListener('change', () => { saveState(); applyFilters(); });
+  }
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      if (filterName)   filterName.value = '';
+      if (filterUnit)   filterUnit.value = '';
+      if (showInactive) showInactive.checked = false;
+      saveState();
+      applyFilters();
+    });
+  }
 });
 </script>
 
+<!-- (Optional) Wenn du diese Logik auch weiterhin brauchst: exklusives Ankreuzen auf Edit-Seite -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const chiefBox = document.querySelector('input[name="chief"]');
   const supervisorBox = document.querySelector('input[name="supervisor"]');
-
   if (chiefBox && supervisorBox) {
     chiefBox.addEventListener('change', function() {
       if (this.checked) supervisorBox.checked = false;
