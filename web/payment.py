@@ -395,7 +395,7 @@ def fortsetzen_antrag(antrag_id: int):
 
 @payment_routes.route('/zahlungsfreigabe/audit')
 @login_required
-@require_perms('audit:view')
+#@require_perms('audit:view')
 def zahlungsfreigabe_audit():
     with engine.begin() as conn:
         rows = conn.execute(text("""

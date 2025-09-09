@@ -13,10 +13,13 @@
         <form method="post" action="{{ url_for('bbalance_routes.add') }}" id="transaction-form" novalidate>
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <!-- Datum -->
-          <div class="form-floating mb-3">
-            <input type="text" name="datum" id="datum" class="form-control" placeholder="Datum"
-              value="{{ default_date }}" required autofocus>
-            <label for="datum">{{ _('Datum') }}</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text">{{ _('Datum') }}</span>
+            <div class="form-floating flex-grow-1">
+              <input type="text" name="datum" id="datum" class="form-control" placeholder="Datum"
+                value="{{ default_date }}" required autofocus>
+              <label for="datum">{{ _('Datum') }}</label>
+            </div>
           </div>
           
           <!-- Titel -->
@@ -28,6 +31,7 @@
             </div>
           </div>
 
+          <!-- Bemerkung -->
           <div class="input-group mb-3">
             <span class="input-group-text">{{ _('Bemerkung') }}</span>
             <div class="form-floating flex-grow-1">
@@ -36,8 +40,22 @@
             </div>
           </div>
 
+          <!-- Gruppe -->
+          <div class="input-group mb-3">
+            <span class="input-group-text">{{ _('Gruppe') }}</span>
+             <div class="form-floating flex-grow-1">
+              <select name="gruppe" id="gruppe" class="form-select" required>
+                <option value="">Gruppe wählen</option>
+                <option value="Gruppe 1">Gruppe 1</option>
+                <option value="Gruppe 2">Gruppe 2</option>
+                <option value="Alle">Alle Gruppen</option>
+              </select>
+            <label for="gruppe">Gruppe</label>
+            </div>
+          </div>
+
+          <!-- Hinzufügen -->
           <div class="d-flex gap-2">
-            <!-- Hinzufügen -->
             <button type="submit" class="btn btn-success flex-grow-1" disabled>
               <i class="bi-plus-lg me-1"></i> {{ _('Hinzufügen') }}
             </button>
@@ -92,32 +110,33 @@
     </div>
 
     <!-- Tabelle -->
-    <div class="table-responsive">
+    <div class="table-responsive kartenansicht">
       <table class="table table-sm align-middle table-striped">
         <thead class="table-light">
           <tr>
             <th style="cursor:pointer;" onclick="sortTableByDate()">{{ _('Datum') }}<i class="bi bi-arrow-down-up"></i>
             </th>
             <th>{{ _('Titel') }}</th>
-            <th>{{ _('Bemerkung') }}</th>
+            <!--th>{{ _('Bemerkung') }}</th-->
+            <th>{{ _('Gruppe') }}</th>
             <th>Anwesend</th>
             <th>Entschuldigt</th>
             <th>Unentschuldigt</th>
-
             <th class="text-end">{{ _('Aktionen') }}</th>
           </tr>
         </thead>
         <tbody>
           {% for e in entries %}
           <tr>
-            <td>{{ format_date_de(e.datum) }}</td>
-            <td>{{ e.titel }}</td>
-            <td>{{ e.bemerkung }}</td>
-            <td>{{ e.a }}</td>
-            <td>{{ e.e }}</td>
-            <td>{{ e.u }}</td>
+            <td data-label="Datum">{{ format_date_de(e.datum) }}</td>
+            <td data-label="Titel">{{ e.titel }}</td>
+             <td data-label="Gruppe">{{ e.gruppe }}</td>
+            <!--td data-label="Bemerkung">{{ e.bemerkung }}</td-->
+            <td data-label="Anwesend">{{ e.a }}</td>
+            <td data-label="Entschuldigt">{{ e.e }}</td>
+            <td data-label="Unentschuldigt">{{ e.u }}</td>
 
-            <td class="text-end">
+            <td class="text-end" data-label="Aktionen">
               <!-- Bearbeiten -->
               <a class="btn btn-sm btn-outline-primary" href="{{ url_for('bbalance_routes.edit', entry_id=e.id) }}"
                 title="{{ _('Bearbeiten') }}">

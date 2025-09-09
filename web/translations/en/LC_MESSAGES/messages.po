@@ -395,7 +395,7 @@ msgstr "Welcome"
 
 #: templates/base.html:5
 msgid "BottleBalanceTitle"
-msgstr "BottleBalance"
+msgstr "JFApp"
 
 #: templates/base.html:48
 msgid "Dashboard"

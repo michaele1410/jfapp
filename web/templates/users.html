@@ -78,7 +78,7 @@
 
 
     <!-- Liste der Benutzer -->
-    <div class="table-responsive">
+    <div class="table-responsive kartenansicht">
       <table class="table table-sm align-middle table-striped">
         <thead class="table-light">
           <tr>
@@ -97,7 +97,7 @@
           {% for u in users %}
           <tr>
             <!-- Benutzername + ID -->
-            <td class="text-nowrap">
+            <td class="text-nowrap" data-label="Displayname">
               {{ u.displayname }}<br>
               <!--small class="text-muted">ID: {{ u.id }}</small-->
             </td>
@@ -106,7 +106,7 @@
             <!--td>{{ u.email or '—' }}</td-->
 
             <!-- -->
-            <td>{{ u.unit or '—' }}</td>
+            <td data-label="Einheit">{{ u.unit or '—' }}</td>
 
             <!-- Rollenwechsel -->
             <!--<td>
@@ -124,7 +124,7 @@
             </td-->
 
             <!-- Aktiv-Toggle (mit Icon, i18n-Text) -->
-            <td>
+            <td data-label="Aktiv">
               <form method="post" action="{{ url_for('user_routes.users_toggle', uid=u.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 {% if u.active and current_user.id != u.id %}
@@ -140,7 +140,7 @@
             </td>
 
             <!-- Geschäftsführend (can_approve) -->
-            <td>
+            <td data-label="Jugendwart">
               <form method="post" action="{{ url_for('users_toggle_chief', uid=u.id) }}" class="d-inline">
 
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -157,7 +157,7 @@
             </td>
 
             <!-- Betreuer-->
-             <td>
+             <td data-label="Betreuer">
               <form method="post" action="{{ url_for('users_toggle_supervisor', uid=u.id) }}" class="d-inline">
 
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -180,7 +180,7 @@
             <!--td class="text-nowrap">{{ u.updated_at and u.updated_at.strftime('%d.%m.%Y %H:%M') or '—' }}</td-->
 
            <!-- Buttons Aktionen-->
-            <td class="text-end">
+            <td class="text-end" data-label="Aktionen">
               <div class="d-flex gap-2 justify-content-end">
                  <!-- Reset-Link -->
                 <!--form method="post" action="{{ url_for('user_routes.users_reset_link', uid=u.id) }}">

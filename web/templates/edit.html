@@ -35,6 +35,17 @@
             <label for="bemerkung">{{ _('Bemerkung') }}</label>
           </div>
 
+        {% if show_gruppe_select %}
+          <select name="gruppe" class="form-select">
+            <option value="Gruppe 1" {% if data.gruppe == 'Gruppe 1' %}selected{% endif %}>Gruppe 1</option>
+            <option value="Gruppe 2" {% if data.gruppe == 'Gruppe 2' %}selected{% endif %}>Gruppe 2</option>
+            <option value="Alle" {% if data.gruppe == 'Alle' %}selected{% endif %}>Alle Gruppen</option>
+          </select>
+        {% else %}
+          <input type="hidden" name="gruppe" value="{{ data.gruppe }}">
+        {% endif %}
+
+
           <!-- Anwesenheit Jugendliche -->
         <h5 class="mt-4">Anwesenheit – Jugendliche</h5>
 <table class="table table-sm table-bordered align-middle">
@@ -45,26 +56,34 @@
       <th class="text-center">A</th>
       <th class="text-center">E</th>
       <th class="text-center">U</th>
-      <th>Bemerkung</th>
+       <th class="text-center">B</th>
     </tr>
   </thead>
   <tbody>
     {% for u in jugendliche %}
     <tr>
-      <td>{{ u.displayname }}</td>
-      <td>{{ u.unit }}</td>
-      <td class="text-center">
+      <td data-label="Displayname">{{ u.displayname }}</td>
+      <td data-label="Einheit">{{ u.unit }}</td>
+      <td class="text-center" data-label="A">
         <input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_A" {% if u.anwesend %}checked{% endif %}>
       </td>
-      <td class="text-center">
+      <td class="text-center" data-label="E">
         <input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_E" {% if u.entschuldigt %}checked{% endif %}>
       </td>
-      <td class="text-center">
+      <td class="text-center" data-label="U">
         <input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_U" {% if u.unentschuldigt %}checked{% endif %}>
       </td>
-      <td>
-        <input type="text" name="bemerkung_{{ u.id }}" class="form-control" value="{{ u.bemerkung or '' }}">
+      <td class="text-center" data-label="B">
+        <button type="button"
+                class="btn btn-sm open-bemerkung-modal {% if u.bemerkung %}btn-warning{% else %}btn-outline-secondary{% endif %}"
+                data-user="{{ u.id }}"
+                data-bemerkung="{{ u.bemerkung or '' }}">
+          <i class="bi bi-chat-left-text"></i>
+        </button>
       </td>
+      <!--td data-label="Bemerkung">
+        <input type="text" name="bemerkung_{{ u.id }}" class="form-control" value="{{ u.bemerkung or '' }}">
+      </td-->
     </tr>
     {% endfor %}
   </tbody>
@@ -78,9 +97,8 @@
         <th>Name</th>
         <th>Einheit</th>
         <th class="text-center">A</th>
-        <th class="text-center">E</th>
-        <th class="text-center">U</th>
-        <th>Bemerkung</th>
+        <!--th class="text-center">E</th>
+        <th class="text-center">U</th-->
         <th></th>
       </tr>
     </thead>
@@ -88,7 +106,7 @@
       {% for item in (data.interessenten or []) %}
       {% set i = loop.index0 %}
       <tr>
-        <td><input type="text" name="interessent_name_{{ i }}" value="{{ item.name }}" class="form-control"></td>
+        <td data-label="Interessenten"><input type="text" name="interessent_name_{{ i }}" value="{{ item.name }}" class="form-control"></td>
         <td>
           <select name="interessent_unit_{{ i }}" class="form-select">
                     {% set einheiten = ['Hückelhoven','Ratheim','Hilfarth','Brachelen','Baal','Doveren','Kleingladbach','Schaufenberg'] %}
@@ -97,10 +115,10 @@
             {% endfor %}
           </select>
         </td>
-                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_{{ i }}" name="interessent_a_{{ i }}" {% if item.a %}checked{% endif %}></td>
-                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_{{ i }}" name="interessent_e_{{ i }}" {% if item.e %}checked{% endif %}></td>
-                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_{{ i }}" name="interessent_u_{{ i }}" {% if item.u %}checked{% endif %}></td>
-        <td><input type="text" name="interessent_bemerkung_{{ i }}" value="{{ item.bemerkung }}" class="form-control"></td>
+        <td class="text-center" data-label="A"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_{{ i }}" name="interessent_a_{{ i }}" {% if item.a %}checked{% endif %}></td>
+        <!--td class="text-center" data-label="E"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_{{ i }}" name="interessent_e_{{ i }}" {% if item.e %}checked{% endif %}></td>
+        <td class="text-center" data-label="U"><input type="checkbox" class="anwesenheit form-check-input" data-user="interessent_{{ i }}" name="interessent_u_{{ i }}" {% if item.u %}checked{% endif %}></td>
+        <td data-label="Bemerkung"><input type="text" name="interessent_bemerkung_{{ i }}" value="{{ item.bemerkung }}" class="form-control"></td-->
         <td><button type="button" class="btn btn-sm btn-danger remove-row">✖</button></td>
       </tr>
       {% endfor %}
@@ -118,19 +136,26 @@
       <th class="text-center">A</th>
       <th class="text-center">E</th>
       <th class="text-center">U</th>
-      <th>Bemerkung</th>
+      <th class="text-center">B</th>
     </tr>
   </thead>
   <tbody>
     {% for u in betreuer %}
     <tr>
-      <td>{{ u.displayname }}</td>
-      <td>{{ u.unit }}</td>
-                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_A" {% if u.anwesend %}checked{% endif %}></td>
-                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_E" {% if u.entschuldigt %}checked{% endif %}></td>
-                <td class="text-center"><input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_U" {% if u.unentschuldigt %}checked{% endif %}></td>
-                <td><input class="form-control" name="bemerkung_{{ u.id }}" type="text" value="{{ u.bemerkung or '' }}"></td>
-    </tr>
+      <td data-label="Displayname">{{ u.displayname }}</td>
+      <td data-label="Einheit">{{ u.unit }}</td>
+      <td class="text-center" data-label="A"><input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_A" {% if u.anwesend %}checked{% endif %}></td>
+      <td class="text-center" data-label="E"><input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_E" {% if u.entschuldigt %}checked{% endif %}></td>
+      <td class="text-center" data-label="U"><input type="checkbox" class="anwesenheit form-check-input" data-user="{{ u.id }}" name="anwesenheit_{{ u.id }}_U" {% if u.unentschuldigt %}checked{% endif %}></td>
+      <td class="text-center" data-label="B">
+        <button type="button"
+                class="btn btn-sm open-bemerkung-modal {% if u.bemerkung %}btn-warning{% else %}btn-outline-secondary{% endif %}"
+                data-user="{{ u.id }}"
+                data-bemerkung="{{ u.bemerkung or '' }}">
+          <i class="bi bi-chat-left-text"></i>
+        </button>
+      </td>
+
     {% endfor %}
   </tbody>
 </table>
@@ -143,6 +168,28 @@
     </div>
   </div>
 </div>
+
+<div class="modal fade" id="bemerkungModal" tabindex="-1" aria-labelledby="bemerkungModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="bemerkungForm">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bemerkungModalLabel">Bemerkung bearbeiten</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Schließen"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="bemerkungUserId" name="user_id">
+          <textarea class="form-control" id="bemerkungText" name="bemerkung" rows="4"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -195,4 +242,83 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const gruppe1Einheiten = ['Hückelhoven', 'Doveren', 'Baal', 'Rurich'];
+  const gruppe2Einheiten = ['Ratheim', 'Millich', 'Kleingladbach', 'Hilfarth', 'Brachelen'];
+
+  function filterRows() {
+    const showGruppe1 = document.getElementById('gruppe1').checked;
+    const showGruppe2 = document.getElementById('gruppe2').checked;
+
+    document.querySelectorAll('table tbody tr').forEach(row => {
+      const einheitCell = row.querySelector('td:nth-child(2)');
+      if (!einheitCell) return;
+      const einheit = einheitCell.textContent.trim();
+
+      const inGruppe1 = gruppe1Einheiten.includes(einheit);
+      const inGruppe2 = gruppe2Einheiten.includes(einheit);
+
+      if ((showGruppe1 && inGruppe1) || (showGruppe2 && inGruppe2) || (!showGruppe1 && !showGruppe2)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+
+  document.getElementById('gruppe1').addEventListener('change', filterRows);
+  document.getElementById('gruppe2').addEventListener('change', filterRows);
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const modal = new bootstrap.Modal(document.getElementById('bemerkungModal'));
+  const bemerkungText = document.getElementById('bemerkungText');
+  const bemerkungUserId = document.getElementById('bemerkungUserId');
+
+  // Öffnen des Modals
+  document.querySelectorAll('.open-bemerkung-modal').forEach(button => {
+    button.addEventListener('click', () => {
+      const userId = button.getAttribute('data-user');
+      const bemerkung = button.getAttribute('data-bemerkung');
+      bemerkungUserId.value = userId;
+      bemerkungText.value = bemerkung;
+      modal.show();
+    });
+  });
+
+  // Speichern der Bemerkung im Modal
+  document.getElementById('bemerkungForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const userId = bemerkungUserId.value;
+    const bemerkung = bemerkungText.value.trim();
+
+    // Verstecktes Feld aktualisieren oder erzeugen
+    let hiddenInput = document.querySelector(`input[name="bemerkung_${userId}"]`);
+    if (!hiddenInput) {
+      hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = `bemerkung_${userId}`;
+      document.getElementById('transaction-form').appendChild(hiddenInput);
+    }
+    hiddenInput.value = bemerkung;
+
+    // Button aktualisieren
+    const button = document.querySelector(`.open-bemerkung-modal[data-user="${userId}"]`);
+    if (button) {
+      button.setAttribute('data-bemerkung', bemerkung);
+      button.setAttribute('title', bemerkung ? 'Bemerkung vorhanden' : 'Keine Bemerkung');
+
+      button.classList.remove('btn-warning', 'btn-outline-secondary');
+      button.classList.add(bemerkung ? 'btn-warning' : 'btn-outline-secondary');
+    }
+
+    modal.hide();
+  });
+});
+</script>
+
 {% endblock %}

@@ -50,7 +50,12 @@ from modules.csv_utils import (
 
 bbalance_routes = Blueprint('bbalance_routes', __name__)
 
-
+GRUPPEN_EINHEITEN = {
+    'Gruppe 1': ['Hückelhoven', 'Doveren', 'Baal', 'Rurich'],
+    'Gruppe 2': ['Ratheim', 'Millich', 'Kleingladbach', 'Hilfarth', 'Brachelen'],
+    'Alle': ['Hückelhoven', 'Doveren', 'Baal', 'Rurich',
+             'Ratheim', 'Millich', 'Kleingladbach', 'Hilfarth', 'Brachelen']
+}
 
 @bbalance_routes.get('/')
 @login_required
@@ -112,6 +117,20 @@ def index():
 def add():
     user = current_user()
 
+    gruppe = request.form.get('gruppe')
+    einheiten = GRUPPEN_EINHEITEN.get(gruppe, [])
+
+    if einheiten:
+        with engine.begin() as conn:
+            personen = conn.execute(text("""
+                SELECT id, displayname, unit, supervisor, chief
+                FROM users
+                WHERE unit IN :einheiten
+                AND active = TRUE
+                AND COALESCE(displayname, '') != ''
+                AND id != 1
+            """), {'einheiten': tuple(einheiten)}).mappings().all()
+
     # Rohwerte für sauberes Re-Render bei Fehlern merken
     datum_s   = (request.form.get('datum') or '').strip()
     temp_token = (request.form.get('temp_token') or '').strip()
@@ -155,14 +174,16 @@ def add():
     # Datensatz speichern
     with engine.begin() as conn:
         res = conn.execute(text("""
-            INSERT INTO entries (datum, titel, bemerkung, created_by)
-            VALUES (:datum,:titel,:bemerkung,:cb)
+        INSERT INTO entries (datum, titel, bemerkung, created_by, gruppe)
+            VALUES (:datum, :titel, :bemerkung, :cb, :gruppe)
             RETURNING id
+
         """), {
             'datum': datum,
             'titel': titel,
             'bemerkung': bemerkung,
-            'cb': user['id']
+            'cb': user['id'],
+            'gruppe': gruppe
         })
         new_id = res.scalar_one()
 
@@ -204,25 +225,26 @@ def edit(entry_id: int):
             ORDER BY a.created_at ASC, a.id ASC
         """), {'id': entry_id}).mappings().all()
 
-        # 4) Users + Anwesenheit  ✅ hier u.unit selektieren
-        users = conn.execute(text("""
-            SELECT u.id,
-                u.username,
-                u.displayname,
-                u.unit,
-                u.supervisor,
-                u.chief,
-                a.anwesend,
-                a.entschuldigt,
-                a.unentschuldigt,
-                a.bemerkung
+        gruppe = entry.get('gruppe') if entry else None
+        einheiten = GRUPPEN_EINHEITEN.get(gruppe, [])
+
+        sql = """
+            SELECT u.id, u.username, u.displayname, u.unit, u.supervisor, u.chief,
+                a.anwesend, a.entschuldigt, a.unentschuldigt, a.bemerkung
             FROM users u
-            LEFT JOIN anwesenheit a
-            ON a.user_id = u.id AND a.entry_id = :eid
+            LEFT JOIN anwesenheit a ON a.user_id = u.id AND a.entry_id = :eid
             WHERE u.active = TRUE
             AND COALESCE(u.displayname, '') != ''
             AND u.id != 1
-        """), {'eid': entry_id}).mappings().all()
+        """
+
+        params = {'eid': entry_id}
+        if einheiten:
+            sql += " AND u.unit IN :einheiten"
+            params['einheiten'] = tuple(einheiten)
+
+        users = conn.execute(text(sql), params).mappings().all()
+
 
     # Gruppieren in Python
     jugendliche = sorted(
@@ -249,6 +271,7 @@ def edit(entry_id: int):
         'ausgabe': row['ausgabe'],
         'bemerkung': row['bemerkung'],
         'titel': row['titel'],
+        'gruppe': gruppe,
         'interessenten': row.get('interessenten') or [] 
     }
 
@@ -342,7 +365,8 @@ def edit_post(entry_id: int):
     changes = []
     # ... (bestehende Diff-Logik bleibt)
 
-    
+    gruppe = request.form.get('gruppe') or row.get('gruppe')
+
 # 6) Speichern
     with engine.begin() as conn:
         conn.execute(text("""
@@ -354,6 +378,7 @@ def edit_post(entry_id: int):
                 ausgabe=:ausgabe,
                 bemerkung=:bemerkung,
                 titel=:titel,
+                gruppe=:gruppe,
                 updated_at=NOW()
             WHERE id=:id
         """), {
@@ -364,7 +389,8 @@ def edit_post(entry_id: int):
             'einnahme': str(einnahme) if einnahme is not None else None,
             'ausgabe':  str(ausgabe)  if ausgabe  is not None else None,
             'bemerkung': bemerkung,
-            'titel': titel
+            'titel': titel,
+            'gruppe': gruppe
         })
 
         # Anwesenheit neu speichern (bereits vorhanden)
@@ -480,7 +506,7 @@ def update_interessenten(id: int):
 # -----------------------
 @bbalance_routes.get('/export')
 @login_required
-@require_perms('export:csv')
+#@require_perms('export:csv')
 def export_csv():
     q = (request.args.get('q') or '').strip()
     df = request.args.get('from')
@@ -509,7 +535,7 @@ def export_csv():
 
 @bbalance_routes.post('/import')
 @login_required
-@require_perms('import:csv')
+#@require_perms('import:csv')
 @require_csrf
 def import_csv():
     file = request.files.get('file')

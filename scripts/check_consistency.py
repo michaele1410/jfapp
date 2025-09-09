@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-BottleBalance Konsistenz-Check
+JFApp Konsistenz-Check
 
 Prüft:
 - Blueprints: Definitionen, Nutzungen (@bp.route/get/post/...), Registrierung in web/app.py
@@ -16,7 +16,7 @@ Aufrufbeispiele:
   python check_consistency.py
   python check_consistency.py --root .
   python check_consistency.py --json report.json
-  python scripts/check_consistency.py --root /var/lib/docker/volumes/bottlebalance-dev
+  python scripts/check_consistency.py --root /var/lib/docker/volumes/JFApp-dev
 
 """
 
@@ -373,7 +373,7 @@ def build_report(root: Path, json_out: Optional[Path]) -> ProjectReport:
 # --------------------------- CLI ---------------------------
 
 def main():
-    ap = argparse.ArgumentParser(description="BottleBalance Konsistenz-Check")
+    ap = argparse.ArgumentParser(description="JFApp Konsistenz-Check")
     ap.add_argument("--root", help="Repo-Root (Standard: auto)", default=None)
     ap.add_argument("--json", help="Optional: Ergebnisse als JSON exportieren", default=None)
     args = ap.parse_args()

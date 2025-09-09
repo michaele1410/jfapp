@@ -128,7 +128,7 @@ def attachments_download(att_id: int):
 # app.py
 @attachments_routes.post('/attachments/<int:att_id>/delete')
 @login_required
-@require_perms('entries:edit:any')
+#@require_perms('entries:edit:any')
 @require_csrf
 def attachments_delete(att_id: int):
     with engine.begin() as conn:
