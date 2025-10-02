@@ -72,6 +72,12 @@
         </a>
         {% endif %}-->
 
+        <!-- About -->
+        <a class="btn btn-outline-secondary btn-sm" href="#" data-bs-toggle="modal"
+              data-bs-target="#aboutModal">
+          <i class="bi-info-circle me-1"></i> {{ _('Über') }}
+        </a>
+        
         <form method="post" action="{{ url_for('auth_routes.logout') }}" class="d-inline">
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button type="submit" class="btn btn-outline-secondary btn-sm">
