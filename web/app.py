@@ -1881,10 +1881,16 @@ def attachments_view(att_id: int):
 
     return resp
 
-@app.route("/version")
-def version_info():
-    version = os.getenv("APP_VERSION", get_version())
-    return render_template_string("<h1>Version: {{ version }}</h1>", version=version)
+def get_version():
+    try:
+        with open("VERSION") as f:
+            return f.read().strip()
+    except Exception:
+        return "dev"
+
+@app.context_processor
+def inject_version():
+    return dict(app_version=os.getenv("APP_VERSION", get_version()))
 
 if __name__ == '__main__':
     os.environ.setdefault('TZ', 'Europe/Berlin')
