@@ -64,9 +64,14 @@ def login():
         force_profile = True
         session['force_profile_after_login'] = True  # <<--- nur Flag, keine Session-Authentifizierung!
 
-    if user['totp_enabled']:
+    #if user['totp_enabled']:
         # 2FA-Flow starten; force_profile wird nach erfolgreicher 2FA ausgewertet
+    #    session['pending_2fa_user_id'] = user['id']
+    #    return redirect(url_for('auth_routes.login_2fa_get'))
+    if user['totp_enabled']:
+        # Optional: 2FA anbieten, aber nicht erzwingen
         session['pending_2fa_user_id'] = user['id']
+        flash(_('2FA ist für dein Konto aktiviert. Du kannst es im Profil deaktivieren.'), 'info')
         return redirect(url_for('auth_routes.login_2fa_get'))
 
     # Kein 2FA: direkt finalisieren

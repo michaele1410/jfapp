@@ -300,7 +300,7 @@ CREATE TABLE IF NOT EXISTS users (
     active BOOLEAN NOT NULL DEFAULT TRUE,
     must_change_password BOOLEAN NOT NULL DEFAULT FALSE,
     totp_secret TEXT,
-    totp_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    totp_enabled BOOLEAN NOT NULL DEFAULT TRUE,
     unit TEXT,
     chief BOOLEAN NOT NULL DEFAULT FALSE,
     supervisor BOOLEAN NOT NULL DEFAULT FALSE,
@@ -816,9 +816,12 @@ def profile_post():
 
             # Nach Passwortänderung: 2FA aktivieren, falls noch nicht aktiv
             user = conn.execute(text("SELECT totp_enabled FROM users WHERE id=:id"), {'id': uid}).mappings().first()
+            #if user and not user['totp_enabled']:
+            #    flash(_('Bitte aktiviere die Zwei-Faktor-Authentifizierung (2FA), um dein Konto zusätzlich zu schützen.'))
+            #    return redirect(url_for('enable_2fa'))  # <-- Sofortige Rückgabe
             if user and not user['totp_enabled']:
-                flash(_('Bitte aktiviere die Zwei-Faktor-Authentifizierung (2FA), um dein Konto zusätzlich zu schützen.'))
-                return redirect(url_for('enable_2fa'))  # <-- Sofortige Rückgabe
+                flash(_('Hinweis: Du kannst dein Konto zusätzlich mit Zwei-Faktor-Authentifizierung (2FA) schützen.'), 'info')
+
         else:
             conn.execute(text("""
                 UPDATE users SET email=:em, updated_at=NOW()
