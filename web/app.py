@@ -167,9 +167,16 @@ def setup_logger(name):
     logger.addHandler(handler)
     return logger
 
+app = Flask(__name__, static_folder='static')
+
 # -----------------------
 # Feature Switches (ENV)
 # -----------------------
+
+# Developer Information
+DEVELOPER_EMAIL = "webmaster@michaeleitdorf.de"
+DEVELOPER_URL = "https://github.com/michaele1410/jfapp"
+
 IMPORT_USE_PREVIEW   = os.getenv("IMPORT_USE_PREVIEW", "true").lower() in ("1","true","yes","on")
 IMPORT_ALLOW_MAPPING = os.getenv("IMPORT_ALLOW_MAPPING", "true").lower() in ("1","true","yes","on")
 IMPORT_ALLOW_DRYRUN  = os.getenv("IMPORT_ALLOW_DRYRUN", "true").lower() in ("1","true","yes","on")
@@ -236,11 +243,6 @@ def get_timezone():
         return user.get('timezone') if isinstance(user, dict) else getattr(user, 'timezone', None)
     return None  # oder ein Default wie 'Europe/Berlin'
 
-
-
-
-
-app = Flask(__name__, static_folder='static')
 # Register Blueprints
 app.register_blueprint(auth_routes)
 app.register_blueprint(bbalance_routes)
@@ -1048,6 +1050,17 @@ def inject_helpers():
         return urlencode(current, doseq=True)
     return dict(qs=qs)
 
+
+@app.context_processor
+def inject_developer_and_support_info():
+    encoded_developer_email = base64.b64encode(DEVELOPER_EMAIL.encode()).decode()
+    encoded_support_email = base64.b64encode(app.config["SUPPORT_EMAIL"].encode()).decode()
+    return {
+        'developer_email_encoded': encoded_developer_email,
+        'developer_url': DEVELOPER_URL,
+        'support_email_encoded': encoded_support_email,
+        'support_url': app.config["SUPPORT_URL"]
+    }
 
 # -----------------------
 # Password reset tokens
