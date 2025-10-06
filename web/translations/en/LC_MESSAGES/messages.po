@@ -23,7 +23,6 @@ msgid "Fehler beim Datenbank-Dump: "
 msgstr "Error during database dump: "
 
 #: app.py:711
-#, fuzzy
 msgid "Datei zu groß. Bitte kleinere Datei hochladen."
 msgstr "Upload too large. Please upload a smaller CSV file."
 
@@ -36,6 +35,7 @@ msgid ""
 "Hinweis: Du kannst dein Konto zusätzlich mit Zwei-Faktor-"
 "Authentifizierung (2FA) schützen."
 msgstr ""
+"Note: You can also protect your account with two-factor authentication (2FA)."
 
 #: app.py:833
 msgid "Profil aktualisiert."
@@ -169,13 +169,12 @@ msgid "Error during database dump: "
 msgstr "Error during database dump: "
 
 #: app.py:1798
-#, fuzzy
 msgid "Bemerkungsoptionen aktualisiert."
-msgstr "Profile updated."
+msgstr "Comment options updated."
 
 #: app.py:1800
 msgid "Fehler beim Speichern der Bemerkungsoptionen: "
-msgstr ""
+msgstr "Error saving comment options: "
 
 #: app.py:1808
 #, python-brace-format
@@ -183,19 +182,16 @@ msgid "SMTP configuration detected for host {}:{}."
 msgstr "SMTP configuration detected for host {}:{}."
 
 #: attachments.py:47
-#, fuzzy
 msgid "Bitte Datei(en) auswählen."
-msgstr "Please select a CSV file."
+msgstr "Please select file(s)."
 
 #: attachments.py:80
-#, fuzzy
 msgid "Keine Dateien hochgeladen."
-msgstr "No entries available."
+msgstr "No files uploaded."
 
 #: attachments.py:153
-#, fuzzy
 msgid "Anhang gelöscht."
-msgstr "User deleted."
+msgstr "Attachment deleted."
 
 #: auth.py:41
 msgid ""
@@ -220,7 +216,7 @@ msgstr ""
 
 #: auth.py:74
 msgid "2FA ist für dein Konto aktiviert. Du kannst es im Profil deaktivieren."
-msgstr ""
+msgstr "2FA is enabled for your account. You can disable it in your profile."
 
 #: auth.py:110
 msgid "2FA nicht aktiv."
@@ -256,26 +252,23 @@ msgstr "Password updated. Please log in."
 
 #: bbalance.py:105
 msgid "Fehler beim Laden der Übersicht: "
-msgstr ""
+msgstr "Error loading overview: "
 
 #: bbalance.py:168
 msgid "Bitte Tiel, Datum und Bemerkung angeben."
-msgstr ""
+msgstr "Please specify title, date, and comments."
 
 #: bbalance.py:190 bbalance.py:469
-#, fuzzy
 msgid "Dienst wurde gespeichert."
-msgstr "Settings saved."
+msgstr "Record saved."
 
 #: bbalance.py:261
-#, fuzzy
 msgid "Eintrag nicht gefunden."
-msgstr "User not found."
+msgstr "Entry not found."
 
 #: user.py:66
-#, fuzzy
 msgid "Displayname darf nicht leer sein."
-msgstr "Username cannot be empty."
+msgstr "Display name must not be empty."
 
 #: user.py:69 user.py:287
 msgid "Ungültige Rolle."
@@ -287,7 +280,7 @@ msgstr "User created."
 
 #: user.py:118
 msgid "Es darf nur Chief ODER Supervisor aktiv sein, nicht beides."
-msgstr ""
+msgstr "Only the Chief OR Supervisor may be active, not both."
 
 #: user.py:208
 msgid "Du kannst dich nicht selbst löschen."
@@ -306,9 +299,8 @@ msgid "Reset-Link per E-Mail versendet."
 msgstr "Reset link sent by email."
 
 #: templates/users.html:151 user.py:272
-#, fuzzy
 msgid "Du kannst dich nicht selbst deaktivieren."
-msgstr "You cannot delete yourself."
+msgstr "You cannot deactivate yourself."
 
 #: modules/csv_utils.py:61
 msgid "Datum fehlt"
@@ -373,29 +365,27 @@ msgstr "Close"
 
 #: templates/admin_tools.html:29
 msgid "Bemerkungsoptionen verwalten"
-msgstr ""
+msgstr "Manage comment options"
 
 #: templates/admin_tools.html:30
 msgid "Eine Option pro Zeile"
-msgstr ""
+msgstr "One option per line"
 
 #: templates/admin_tools.html:35
-#, fuzzy
 msgid "Aktuelle Optionen"
-msgstr "Actions"
+msgstr "Current options"
 
 #: templates/admin_tools.html:40
-#, fuzzy
 msgid "Keine Optionen vorhanden"
-msgstr "No entries available."
+msgstr "No options available."
 
 #: templates/admin_tools.html:48
 msgid "Optionen ersetzen"
-msgstr ""
+msgstr "Replace options"
 
 #: templates/admin_tools.html:50
 msgid "Eine Option pro Zeile ..."
-msgstr ""
+msgstr "One option per line ..."
 
 #: templates/admin_tools.html:53 templates/edit.html:164
 #: templates/profile.html:27 templates/profile.html:97 templates/reset.html:24
@@ -404,9 +394,8 @@ msgid "Speichern"
 msgstr "Save"
 
 #: templates/admin_tools.html:57
-#, fuzzy
 msgid "Leeren"
-msgstr "Reference"
+msgstr "Empty"
 
 #: templates/admin_tools.html:71
 msgid "SMTP-Konfiguration prüfen"
@@ -414,15 +403,15 @@ msgstr "Check SMTP configuration"
 
 #: templates/admin_tools.html:83
 msgid "Unbekannter SMTP-Status"
-msgstr ""
+msgstr "Unknown SMTP status"
 
 #: templates/admin_tools.html:90
 msgid "Test-Mail senden"
-msgstr ""
+msgstr "Send test email"
 
 #: templates/admin_tools.html:94
 msgid "Die Test-Mail wird an die konfigurierte SMTP-Benutzeradresse gesendet."
-msgstr ""
+msgstr "The test email will be sent to the configured SMTP user address."
 
 #: templates/admin_tools.html:103
 msgid "PostgreSQL-Datenbankexport"
@@ -433,15 +422,15 @@ msgid ""
 "Erzeugt einen SQL-Dump der aktuellen Datenbank und bietet ihn zum "
 "Download an."
 msgstr ""
+"Generates an SQL dump of the current database and offers it for download."
 
 #: templates/admin_tools.html:113
 msgid "Dump jetzt erzeugen?"
-msgstr ""
+msgstr "Create dump now?"
 
 #: templates/admin_tools.html:114
-#, fuzzy
 msgid "Dump erzeugen & herunterladen"
-msgstr "Generate and download database dump"
+msgstr "Create & download dump"
 
 #: templates/audit.html:5
 msgid "Audit-Log"
@@ -457,11 +446,11 @@ msgstr "Action/Entry ID"
 
 #: templates/audit.html:15 templates/index.html:92
 msgid "Zeitraum"
-msgstr ""
+msgstr "time period"
 
 #: templates/audit.html:17 templates/index.html:94
 msgid "TT.MM.JJJJ – TT.MM.JJJJ"
-msgstr ""
+msgstr "TT.MM.JJJJ – TT.MM.JJJJ"
 
 #: templates/audit.html:23 templates/index.html:102
 msgid "Filtern"
@@ -502,11 +491,11 @@ msgstr "JFApp"
 
 #: templates/base.html:47 templates/index.html:74
 msgid "Dienste"
-msgstr ""
+msgstr "Entry"
 
 #: templates/base.html:52
 msgid "Mitglieder"
-msgstr ""
+msgstr "Members"
 
 #: templates/base.html:58
 msgid "Audit"
@@ -517,13 +506,12 @@ msgid "Profil"
 msgstr "Profil"
 
 #: templates/base.html:71
-#, fuzzy
 msgid "Antrag stellen"
-msgstr "Representation"
+msgstr "Submit Request"
 
 #: templates/base.html:78 templates/base.html:203
 msgid "Über"
-msgstr ""
+msgstr "About"
 
 #: templates/base.html:84
 msgid "Logout"
@@ -538,36 +526,35 @@ msgid "Bitte im Profil aktualisieren."
 msgstr "Please update your profile."
 
 #: templates/base.html:207
-#, fuzzy
 msgid "Name:"
-msgstr "Revenue"
+msgstr "Name:"
 
 #: templates/base.html:208
 msgid "Version:"
-msgstr ""
+msgstr "Version:
 
 #: templates/base.html:209
 msgid "Entwickler:"
-msgstr ""
+msgstr "Developer:"
 
 #: templates/base.html:210
 msgid "Kontakt:"
-msgstr ""
+msgstr "Contact:"
 
 #: templates/base.html:210
-#, fuzzy
 msgid "Entwickler kontaktieren"
-msgstr "Contact support"
+msgstr "Contact developer"
 
 #: templates/base.html:211
 msgid "Webseite:"
-msgstr ""
+msgstr "Website:"
 
 #: templates/base.html:213
 msgid ""
 " ist eine Webanwendung zur Verwaltung von Anwesenheiten für Dienste. Für "
 "Support oder Feedback wenden Sie sich bitte an den Entwickler."
 msgstr ""
+"is a web application for managing attendance for services. For support or feedback, please contact the developer."
 
 #: templates/edit.html:16
 msgid "Datensatz bearbeiten"
@@ -576,7 +563,7 @@ msgstr "Edit entry"
 #: templates/edit.html:28 templates/edit.html:30 templates/index.html:27
 #: templates/index.html:30 templates/index.html:119
 msgid "Titel"
-msgstr ""
+msgstr "Title"
 
 #: templates/edit.html:163 templates/import_preview.html:152
 #: templates/profile.html:26 templates/reset.html:23
@@ -664,13 +651,12 @@ msgid "Import jetzt durchführen"
 msgstr "Import now"
 
 #: templates/index.html:12
-#, fuzzy
 msgid "Neuen Dienst hinzufügen"
 msgstr "Add new entry"
 
 #: templates/index.html:45 templates/index.html:121
 msgid "Gruppe"
-msgstr ""
+msgstr "Group"
 
 #: templates/index.html:60
 msgid "Hinzufügen"
@@ -678,12 +664,11 @@ msgstr "Add"
 
 #: templates/index.html:78
 msgid "Filter für Dienste"
-msgstr ""
+msgstr "Filter for Entries"
 
 #: templates/index.html:85
-#, fuzzy
 msgid "Datum/Titel"
-msgstr "Date missing"
+msgstr "Date/Title"
 
 #: templates/index.html:125 templates/users.html:107
 msgid "Aktionen"
@@ -694,7 +679,6 @@ msgid "Bearbeiten"
 msgstr "Edit entry"
 
 #: templates/index.html:148
-#, fuzzy
 msgid "Eintrag wirklich löschen?"
 msgstr "Are you sure you want to delete this entry?"
 
@@ -712,25 +696,23 @@ msgstr "Bottles"
 
 #: templates/index.html:357
 msgid "Bitte das Dienst-Formular vollständig ausfüllen."
-msgstr ""
+msgstr "Please fill out the Entry form completely."
 
 #: templates/index.html:384
 msgid "Bitte Titel oder Bemerkung ausfüllen."
-msgstr ""
+msgstr "Please fill in the title or comment."
 
 #: templates/index.html:431 templates/index.html:507
-#, fuzzy
 msgid "Keine Anhänge vorhanden."
-msgstr "No entries available."
+msgstr "No Requests available."
 
 #: templates/index.html:461 templates/index.html:521
 msgid "Öffnen"
-msgstr ""
+msgstr "Open"
 
 #: templates/index.html:525
-#, fuzzy
 msgid "Anhang wirklich löschen?"
-msgstr "Are you sure you want to delete this entry?"
+msgstr "Are you sure you want to delete the attachment?"
 
 #: templates/login.html:8
 msgid "Anmeldung"
@@ -750,15 +732,15 @@ msgstr "Login"
 
 #: templates/payment_authorization_detail.html:119
 msgid "Hochladen"
-msgstr ""
+msgstr "Upload"
 
 #: templates/payment_authorization_detail.html:123
 msgid "Zulässige Formate:"
-msgstr ""
+msgstr "Acceptable formats:"
 
 #: templates/payment_authorization_detail.html:123
 msgid "Mehrere Dateien möglich."
-msgstr ""
+msgstr "Multiple files possible."
 
 #: templates/profile.html:11
 msgid "E-Mail (für Passwort-Reset)"
@@ -837,18 +819,16 @@ msgid "Passwort zurücksetzen"
 msgstr "Reset password"
 
 #: templates/users.html:5
-#, fuzzy
 msgid "Mitgliederverwaltung"
 msgstr "User management"
 
 #: templates/users.html:11
-#, fuzzy
 msgid "Username"
 msgstr "Username"
 
 #: templates/users.html:15
 msgid "Displayname"
-msgstr ""
+msgstr "Displayname"
 
 #: templates/users.html:19 templates/users.html:101
 msgid "E-Mail"
@@ -859,9 +839,8 @@ msgid "Rolle"
 msgstr "Role"
 
 #: templates/users.html:29 templates/users.html:100
-#, fuzzy
 msgid "Löscheinheit"
-msgstr "Delete"
+msgstr "Unit"
 
 #: templates/users.html:49
 msgid "Anlegen"
@@ -869,7 +848,7 @@ msgstr "Create"
 
 #: templates/users.html:99
 msgid "Mitglied"
-msgstr ""
+msgstr "Member"
 
 #: templates/users.html:103
 msgid "Aktiv"
@@ -877,12 +856,11 @@ msgstr "Active"
 
 #: templates/users.html:104
 msgid "Jugendwart"
-msgstr ""
+msgstr "Chief"
 
 #: templates/users.html:105
-#, fuzzy
 msgid "Betreuer"
-msgstr "User"
+msgstr "Supervisor"
 
 #: templates/users.html:106
 msgid "Erstellt"
@@ -893,9 +871,8 @@ msgid "Deaktivieren"
 msgstr "Deactivate"
 
 #: templates/users.html:156
-#, fuzzy
 msgid "Du kannst dich nicht selbst aktivieren/deaktivieren."
-msgstr "You cannot delete yourself."
+msgstr "You cannot activate/deactivate yourself."
 
 #: templates/users.html:157 templates/users.html:170 templates/users.html:171
 msgid "Aktivieren"
@@ -903,45 +880,39 @@ msgstr "Activate"
 
 #: templates/users.html:182 templates/users.html:199
 msgid "Berechtigung entfernen"
-msgstr ""
+msgstr "Remove permission"
 
 #: templates/users.html:183 templates/users.html:200
 msgid "Ja"
-msgstr ""
+msgstr "Yes"
 
 #: templates/users.html:186 templates/users.html:203
 msgid "Berechtigung vergeben"
-msgstr ""
+msgstr "Assign authorization"
 
 #: templates/users.html:187 templates/users.html:204
-#, fuzzy
 msgid "Nein"
-msgstr "none"
+msgstr "No"
 
 #: templates/users.html:222
-#, fuzzy
 msgid "Reset-Link generieren"
-msgstr "Reset link sent by email."
+msgstr "Generate reset link"
 
 #: templates/users.html:229
-#, fuzzy
 msgid "Mitglied bearbeiten"
-msgstr "Edit entry"
+msgstr "Edit member"
 
 #: templates/users.html:235
-#, fuzzy
 msgid "Mitglied wirklich löschen?"
-msgstr "Are you sure you want to delete this entry?"
+msgstr "Are you sure you want to delete this member?"
 
 #: templates/users.html:237
-#, fuzzy
 msgid "Mitglied löschen"
-msgstr "Delete"
+msgstr "Delete member"
 
 #: templates/users.html:247
-#, fuzzy
 msgid "Keine Mitglied vorhanden"
-msgstr "No entries available."
+msgstr "No member available"
 
 #: templates/errors/401.html:2 templates/errors/401.html:9
 msgid "Nicht autorisiert"
@@ -949,7 +920,7 @@ msgstr "Not authorised"
 
 #: templates/errors/401.html:12
 msgid "Du bist nicht authorisiert diesen Bereich zu sehen"
-msgstr ""
+msgstr "You are not authorized to view this area."
 
 #: templates/errors/401.html:16 templates/errors/403.html:17
 #: templates/errors/404.html:17 templates/errors/500.html:17
@@ -968,9 +939,8 @@ msgstr "Contact support"
 
 #: templates/errors/401.html:31 templates/errors/403.html:32
 #: templates/errors/404.html:32 templates/errors/500.html:32
-#, fuzzy
 msgid "Zum Login"
-msgstr "Login"
+msgstr "Login page"
 
 #: templates/errors/401.html:38 templates/errors/403.html:39
 #: templates/errors/404.html:39 templates/errors/500.html:39
@@ -983,25 +953,23 @@ msgstr "Access denied"
 
 #: templates/errors/403.html:13
 msgid "Der Zugriff auf diesen Bereich wurde verweigert"
-msgstr ""
+msgstr "Access to this area has been denied."
 
 #: templates/errors/404.html:2 templates/errors/404.html:9
 msgid "Seite nicht gefunden"
 msgstr "Entry not found"
 
 #: templates/errors/404.html:13
-#, fuzzy
 msgid "Die angeforderte Seite wurde nicht gefunden"
-msgstr "Entry not found."
+msgstr "The requested page was not found"
 
 #: templates/errors/500.html:2 templates/errors/500.html:9
 msgid "Unerwarteter Fehler"
 msgstr "Unexpected error"
 
 #: templates/errors/500.html:13
-#, fuzzy
 msgid "Ein unerwarteter Fehler ist aufgetreten"
-msgstr "Unexpected error"
+msgstr "An unexpected error has occurred"
 
 #~ msgid "BottleBalance – Export"
 #~ msgstr "BottleBalance – Export"
