@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-08-16 18:05+0200\n"
+"POT-Creation-Date: 2025-10-06 14:45+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -14,11 +14,190 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.17.0\n"
 
-#: app.py:296
-msgid "Upload zu groß. Bitte kleinere CSV-Datei hochladen."
+#: admin.py:58
+msgid "Datenbank-Dump erfolgreich erzeugt."
+msgstr "Database dump successfully generated."
+
+#: admin.py:62
+msgid "Fehler beim Datenbank-Dump: "
+msgstr "Error during database dump: "
+
+#: app.py:711
+#, fuzzy
+msgid "Datei zu groß. Bitte kleinere Datei hochladen."
 msgstr "Upload too large. Please upload a smaller CSV file."
 
-#: app.py:558
+#: app.py:809
+msgid "Passwörter stimmen nicht überein."
+msgstr "Passwords do not match."
+
+#: app.py:825
+msgid ""
+"Hinweis: Du kannst dein Konto zusätzlich mit Zwei-Faktor-"
+"Authentifizierung (2FA) schützen."
+msgstr ""
+
+#: app.py:833
+msgid "Profil aktualisiert."
+msgstr "Profile updated."
+
+#: app.py:849 app.py:874
+msgid "Benutzer nicht gefunden."
+msgstr "User not found."
+
+#: app.py:892
+msgid "Kein 2FA-Setup aktiv."
+msgstr "Kein 2FA-Setup aktiv."
+
+#: app.py:897
+msgid "Ungültiger 2FA-Code."
+msgstr "Invalid 2FA code."
+
+#: app.py:906
+msgid "2FA aktiviert."
+msgstr "2FA enabled."
+
+#: app.py:925
+msgid "Passwortprüfung fehlgeschlagen."
+msgstr "Password verification failed."
+
+#: app.py:939
+msgid "2FA deaktiviert."
+msgstr "2FA disabled."
+
+#: app.py:949 app.py:972
+msgid "Ungültige Theme-Auswahl."
+msgstr "Invalid theme selection."
+
+#: app.py:955
+msgid "Theme-Einstellung gespeichert."
+msgstr "Theme settings saved."
+
+#: app.py:968
+msgid "Ungültige Sprache."
+msgstr "Invalid language."
+
+#: app.py:980
+msgid "Einstellungen gespeichert."
+msgstr "Settings saved."
+
+#: app.py:1161
+msgid "CSV-Header entspricht nicht dem erwarteten Format."
+msgstr "CSV-Header entspricht nicht dem erwarteten Format."
+
+#: app.py:1344 app.py:1463
+msgid "Vorschau abgelaufen oder nicht gefunden."
+msgstr "Preview expired or not found."
+
+#: app.py:1349 app.py:1477
+msgid "CSV-Datei nicht gefunden."
+msgstr "CSV file not found."
+
+#: app.py:1358
+msgid "CSV konnte nicht gelesen werden."
+msgstr "CSV could not be read."
+
+#: app.py:1405 bbalance.py:544
+msgid "Bitte eine CSV-Datei auswählen."
+msgstr "Please select a CSV file."
+
+#: app.py:1469
+msgid "Vorschau abgelaufen oder bereits verwendet."
+msgstr "Preview expired or already used."
+
+#: app.py:1658 templates/edit.html:25 templates/import_preview.html:71
+#: templates/index.html:17 templates/index.html:21 templates/index.html:117
+msgid "Datum"
+msgstr "Date"
+
+#: app.py:1658 templates/import_preview.html:72
+msgid "Vollgut"
+msgstr "Full bottles"
+
+#: app.py:1658 templates/import_preview.html:73
+msgid "Leergut"
+msgstr "Empty bottles"
+
+#: app.py:1658
+msgid "Inventar"
+msgstr "Inventory"
+
+#: app.py:1659 templates/import_preview.html:74
+msgid "Einnahme"
+msgstr "Revenue"
+
+#: app.py:1659 templates/import_preview.html:75
+msgid "Ausgabe"
+msgstr "Expenditure"
+
+#: app.py:1659
+msgid "Kassenbestand"
+msgstr "Cash balance"
+
+#: app.py:1659 templates/edit.html:34 templates/edit.html:35
+#: templates/import_preview.html:76 templates/index.html:36
+#: templates/index.html:39 templates/index.html:120
+msgid "Bemerkung"
+msgstr "Note"
+
+#: app.py:1667 app.py:1668 app.py:1669 modules/utils.py:13
+msgid "waehrung"
+msgstr "€"
+
+#: app.py:1710
+msgid "Sprache geändert."
+msgstr "Language changed."
+
+#: app.py:1755 app.py:1806
+msgid "SMTP configuration incomplete."
+msgstr "SMTP configuration incomplete."
+
+#: app.py:1767
+msgid "SMTP test successful – test email sent."
+msgstr "SMTP test successful – test email sent."
+
+#: app.py:1769
+msgid "SMTP test failed: "
+msgstr "SMTP test failed: "
+
+#: app.py:1784
+msgid "Database dump successfully generated."
+msgstr "Database dump successfully generated."
+
+#: app.py:1787
+msgid "Error during database dump: "
+msgstr "Error during database dump: "
+
+#: app.py:1798
+#, fuzzy
+msgid "Bemerkungsoptionen aktualisiert."
+msgstr "Profile updated."
+
+#: app.py:1800
+msgid "Fehler beim Speichern der Bemerkungsoptionen: "
+msgstr ""
+
+#: app.py:1808
+#, python-brace-format
+msgid "SMTP configuration detected for host {}:{}."
+msgstr "SMTP configuration detected for host {}:{}."
+
+#: attachments.py:47
+#, fuzzy
+msgid "Bitte Datei(en) auswählen."
+msgstr "Please select a CSV file."
+
+#: attachments.py:80
+#, fuzzy
+msgid "Keine Dateien hochgeladen."
+msgstr "No entries available."
+
+#: attachments.py:153
+#, fuzzy
+msgid "Anhang gelöscht."
+msgstr "User deleted."
+
+#: auth.py:41
 msgid ""
 "Standard-Login: Benutzername <strong>admin</strong> und Passwort "
 "<strong>admin</strong> – bitte sofort ändern!"
@@ -26,271 +205,130 @@ msgstr ""
 "Default login: username <strong>admin</strong> and password "
 "<strong>admin</strong> - please change immediately!"
 
-#: app.py:574
+#: auth.py:56
 msgid "Login fehlgeschlagen."
 msgstr "Login failed."
 
-#: app.py:580
+#: auth.py:62
 #, python-brace-format
 msgid ""
 "Bitte das Passwort <a href=\"{0}\" class=\"alert-link\">im Profil</a> "
 "ändern."
 msgstr ""
-"Please change the password <a href=\"{0}\" class=\"alert-link\">in your profile</a>."
-"Change."
+"Please change the password <a href=\"{0}\" class=\"alert-link\">in your "
+"profile</a>.Change."
 
-#: app.py:623
+#: auth.py:74
+msgid "2FA ist für dein Konto aktiviert. Du kannst es im Profil deaktivieren."
+msgstr ""
+
+#: auth.py:110
 msgid "2FA nicht aktiv."
 msgstr "2FA is currently"
 
-#: app.py:659
+#: auth.py:146
 msgid ""
 "Backup-Code verwendet. Es wurden automatisch neue Codes generiert. Bitte "
 "sicher aufbewahren."
 msgstr ""
-"Backup code used. New codes were generated automatically. Please keep them safe.
-"
+"Backup code used. New codes were generated automatically. Please keep "
+"them safe"
 
-#: app.py:668
+#: auth.py:155
 msgid "Ungültiger 2FA-Code oder Backup-Code."
 msgstr "Invalid 2FA code or backup code."
 
-#: app.py:688
+#: auth.py:167
 msgid "Neue Backup-Codes wurden generiert. Bitte sicher aufbewahren."
 msgstr "New backup codes have been generated. Please keep them safe."
 
-#: app.py:732 app.py:1063
-msgid "Passwort muss mindestens 8 Zeichen haben."
-msgstr "Password must be at least 8 characters long."
-
-#: app.py:735
-msgid "Passwörter stimmen nicht überein."
-msgstr "Passwords do not match."
-
-#: app.py:748
-msgid ""
-"Bitte aktiviere die Zwei-Faktor-Authentifizierung (2FA), um dein Konto "
-"zusätzlich zu schützen."
-msgstr ""
-"Please activate two-factor authentication (2FA) to provide additional protection for your account."
-"
-
-#: app.py:756
-msgid "Profil aktualisiert."
-msgstr "Profile updated."
-
-#: app.py:772 app.py:797
-msgid "Benutzer nicht gefunden."
-msgstr "User not found."
-
-#: app.py:815
-msgid "Kein 2FA-Setup aktiv."
-msgstr "Kein 2FA-Setup aktiv."
-
-#: app.py:820
-msgid "Ungültiger 2FA-Code."
-msgstr "Invalid 2FA code."
-
-#: app.py:829
-msgid "2FA aktiviert."
-msgstr "2FA enabled."
-
-#: app.py:848
-msgid "Passwortprüfung fehlgeschlagen."
-msgstr "Password verification failed."
-
-#: app.py:862
-msgid "2FA deaktiviert."
-msgstr "2FA disabled."
-
-#: app.py:872 app.py:895
-msgid "Ungültige Theme-Auswahl."
-msgstr "Invalid theme selection."
-
-#: app.py:878
-msgid "Theme-Einstellung gespeichert."
-msgstr "Theme settings saved."
-
-#: app.py:891
-msgid "Ungültige Sprache."
-msgstr "Invalid language."
-
-#: app.py:903
-msgid "Einstellungen gespeichert."
-msgstr "Settings saved."
-
-#: app.py:996
-msgid "Reset-Link per E-Mail versendet."
-msgstr "Reset link sent by email."
-
-#: app.py:1020
+#: auth.py:194
 msgid "Passwortanforderungen nicht erfüllt oder stimmen nicht überein."
 msgstr "Password requirements not met or do not match."
 
-#: app.py:1028
+#: auth.py:202
 msgid "Link ungültig oder abgelaufen."
 msgstr "Link invalid or expired."
 
-#: app.py:1033
+#: auth.py:207
 msgid "Passwort aktualisiert. Bitte einloggen."
 msgstr "Password updated. Please log in."
 
-#: app.py:1057
-msgid "Benutzername darf nicht leer sein."
+#: bbalance.py:105
+msgid "Fehler beim Laden der Übersicht: "
+msgstr ""
+
+#: bbalance.py:168
+msgid "Bitte Tiel, Datum und Bemerkung angeben."
+msgstr ""
+
+#: bbalance.py:190 bbalance.py:469
+#, fuzzy
+msgid "Dienst wurde gespeichert."
+msgstr "Settings saved."
+
+#: bbalance.py:261
+#, fuzzy
+msgid "Eintrag nicht gefunden."
+msgstr "User not found."
+
+#: user.py:66
+#, fuzzy
+msgid "Displayname darf nicht leer sein."
 msgstr "Username cannot be empty."
 
-#: app.py:1060 app.py:1092
+#: user.py:69 user.py:287
 msgid "Ungültige Rolle."
 msgstr "Invalid role."
 
-#: app.py:1071
+#: user.py:87
 msgid "Benutzer angelegt."
 msgstr "User created."
 
-#: app.py:1105
-msgid "Neues Passwort muss mindestens 8 Zeichen haben."
-msgstr "New password must be at least 8 characters long."
+#: user.py:118
+msgid "Es darf nur Chief ODER Supervisor aktiv sein, nicht beides."
+msgstr ""
 
-#: app.py:1110
-msgid "Passwort gesetzt."
-msgstr "Password set."
-
-#: app.py:1151
+#: user.py:208
 msgid "Du kannst dich nicht selbst löschen."
 msgstr "You cannot delete yourself."
 
-#: app.py:1157
+#: user.py:214
 msgid "Benutzer gelöscht."
 msgstr "User deleted."
 
-#: app.py:1231
-msgid "Dienst nicht gefunden."
-msgstr "Entry not found."
+#: user.py:229
+msgid "Passwort gesetzt."
+msgstr "Password set."
 
-#: app.py:1330 app.py:1782
-msgid "Bitte eine CSV-Datei auswählen."
-msgstr "Please select a CSV file."
+#: user.py:256
+msgid "Reset-Link per E-Mail versendet."
+msgstr "Reset link sent by email."
 
-#: app.py:1403
-msgid "CSV-Header entspricht nicht dem erwarteten Format."
-msgstr "CSV-Header entspricht nicht dem erwarteten Format."
+#: templates/users.html:151 user.py:272
+#, fuzzy
+msgid "Du kannst dich nicht selbst deaktivieren."
+msgstr "You cannot delete yourself."
 
-#: app.py:1603
-msgid "Leere CSV oder fehlender Header."
-msgstr "Empty CSV or missing header."
-
-#: app.py:1667
-msgid "Ungültiges Geldformat für Einnahme: "
-msgstr "Invalid money format for income:"
-
-#: app.py:1669
-msgid "Ungültiges Geldformat für Ausgabe: "
-msgstr "Invalid money format for output:"
-
-#: app.py:1721 app.py:1840
-msgid "Vorschau abgelaufen oder nicht gefunden."
-msgstr "Preview expired or not found."
-
-#: app.py:1726 app.py:1854
-msgid "CSV-Datei nicht gefunden."
-msgstr "CSV file not found."
-
-#: app.py:1735
-msgid "CSV konnte nicht gelesen werden."
-msgstr "CSV could not be read."
-
-#: app.py:1846
-msgid "Vorschau abgelaufen oder bereits verwendet."
-msgstr "Preview expired or already used."
-
-#: app.py:1906
+#: modules/csv_utils.py:61
 msgid "Datum fehlt"
 msgstr "Date missing"
 
-#: app.py:1910
+#: modules/csv_utils.py:65
 msgid "Ungültiges Datum (erwartet TT.MM.JJJJ): "
 msgstr "Invalid date (expected DD.MM.YYYY):"
 
-#: app.py:2088 templates/edit.html:26 templates/import_preview.html:71
-#: templates/index.html:49 templates/index.html:194
-msgid "Datum"
-msgstr "Date"
+#: modules/csv_utils.py:182
+msgid "Leere CSV oder fehlender Header."
+msgstr "Empty CSV or missing header."
 
-#: app.py:2088 templates/edit.html:41 templates/import_preview.html:72
-#: templates/index.html:55 templates/index.html:195
-msgid "Vollgut"
-msgstr "Full bottles"
+#: modules/csv_utils.py:246
+msgid "Ungültiges Geldformat für Einnahme: "
+msgstr "Invalid money format for income:"
 
-#: app.py:2088 templates/edit.html:56 templates/import_preview.html:73
-#: templates/index.html:61 templates/index.html:196
-msgid "Leergut"
-msgstr "Empty bottles"
-
-#: app.py:2088 templates/index.html:197
-msgid "Inventar"
-msgstr "Inventory"
-
-#: app.py:2089 templates/edit.html:72 templates/import_preview.html:74
-#: templates/index.html:69 templates/index.html:198
-msgid "Einnahme"
-msgstr "Revenue"
-
-#: app.py:2089 templates/edit.html:89 templates/import_preview.html:75
-#: templates/index.html:78 templates/index.html:199
-msgid "Ausgabe"
-msgstr "Expenditure"
-
-#: app.py:2089 templates/index.html:200
-msgid "Kassenbestand"
-msgstr "Cash balance"
-
-#: app.py:2089 templates/edit.html:101 templates/import_preview.html:76
-#: templates/index.html:85 templates/index.html:201
-msgid "Bemerkung"
-msgstr "Note"
-
-#: app.py:2097 app.py:2098 app.py:2099 modules/utils.py:13
-#: templates/edit.html:61 templates/edit.html:78 templates/index.html:66
-#: templates/index.html:75
-msgid "waehrung"
-msgstr "€"
-
-#: app.py:2140
-msgid "Sprache geändert."
-msgstr "Language changed."
-
-#: app.py:2180
-msgid "Datenbank-Dump erfolgreich erzeugt."
-msgstr "Database dump successfully generated."
-
-#: app.py:2184
-msgid "Fehler beim Datenbank-Dump: "
-msgstr "Error during database dump: "
-
-#: app.py:2261 app.py:2297
-msgid "SMTP configuration incomplete."
-msgstr "SMTP configuration incomplete."
-
-#: app.py:2273
-msgid "SMTP test successful – test email sent."
-msgstr "SMTP test successful – test email sent."
-
-#: app.py:2275
-msgid "SMTP test failed: "
-msgstr "SMTP test failed: "
-
-#: app.py:2290
-msgid "Database dump successfully generated."
-msgstr "Database dump successfully generated."
-
-#: app.py:2293
-msgid "Error during database dump: "
-msgstr "Error during database dump: "
-
-#: app.py:2299
-#, python-brace-format
-msgid "SMTP configuration detected for host {}:{}."
-msgstr "SMTP configuration detected for host {}:{}."
+#: modules/csv_utils.py:248
+msgid "Ungültiges Geldformat für Ausgabe: "
+msgstr "Invalid money format for output:"
 
 #: templates/2fa.html:8 templates/profile.html:35
 msgid "2-Faktor-Authentifizierung"
@@ -325,123 +363,225 @@ msgstr "2FA secret key:"
 msgid "6-stelliger Code"
 msgstr "6-digit code"
 
-#: templates/admin_tools.html:3 templates/base.html:69
+#: templates/admin_tools.html:5 templates/base.html:68
 msgid "Admin-Werkzeuge"
 msgstr "Admin tools"
 
-#: templates/admin_tools.html:9
+#: templates/admin_tools.html:17 templates/base.html:217
+msgid "Schließen"
+msgstr "Close"
+
+#: templates/admin_tools.html:29
+msgid "Bemerkungsoptionen verwalten"
+msgstr ""
+
+#: templates/admin_tools.html:30
+msgid "Eine Option pro Zeile"
+msgstr ""
+
+#: templates/admin_tools.html:35
+#, fuzzy
+msgid "Aktuelle Optionen"
+msgstr "Actions"
+
+#: templates/admin_tools.html:40
+#, fuzzy
+msgid "Keine Optionen vorhanden"
+msgstr "No entries available."
+
+#: templates/admin_tools.html:48
+msgid "Optionen ersetzen"
+msgstr ""
+
+#: templates/admin_tools.html:50
+msgid "Eine Option pro Zeile ..."
+msgstr ""
+
+#: templates/admin_tools.html:53 templates/edit.html:164
+#: templates/profile.html:27 templates/profile.html:97 templates/reset.html:24
+#: templates/users.html:135
+msgid "Speichern"
+msgstr "Save"
+
+#: templates/admin_tools.html:57
+#, fuzzy
+msgid "Leeren"
+msgstr "Reference"
+
+#: templates/admin_tools.html:71
 msgid "SMTP-Konfiguration prüfen"
 msgstr "Check SMTP configuration"
 
-#: templates/admin_tools.html:37
+#: templates/admin_tools.html:83
+msgid "Unbekannter SMTP-Status"
+msgstr ""
+
+#: templates/admin_tools.html:90
+msgid "Test-Mail senden"
+msgstr ""
+
+#: templates/admin_tools.html:94
+msgid "Die Test-Mail wird an die konfigurierte SMTP-Benutzeradresse gesendet."
+msgstr ""
+
+#: templates/admin_tools.html:103
 msgid "PostgreSQL-Datenbankexport"
 msgstr "PostgreSQL database export"
 
-#: templates/admin_tools.html:43
-msgid "Datenbank-Dump erzeugen und herunterladen"
+#: templates/admin_tools.html:107
+msgid ""
+"Erzeugt einen SQL-Dump der aktuellen Datenbank und bietet ihn zum "
+"Download an."
+msgstr ""
+
+#: templates/admin_tools.html:113
+msgid "Dump jetzt erzeugen?"
+msgstr ""
+
+#: templates/admin_tools.html:114
+#, fuzzy
+msgid "Dump erzeugen & herunterladen"
 msgstr "Generate and download database dump"
 
-#: templates/audit.html:6
+#: templates/audit.html:5
 msgid "Audit-Log"
 msgstr "Audit-Log"
 
-#: templates/audit.html:10 templates/index.html:107
+#: templates/audit.html:11 templates/index.html:82
 msgid "Suche"
 msgstr "Search"
 
-#: templates/audit.html:11
+#: templates/audit.html:12
 msgid "Aktion/Entry-ID"
 msgstr "Action/Entry ID"
 
-#: templates/audit.html:14 templates/index.html:111
-msgid "Von"
-msgstr "From"
+#: templates/audit.html:15 templates/index.html:92
+msgid "Zeitraum"
+msgstr ""
 
-#: templates/audit.html:18 templates/index.html:115
-msgid "Bis"
-msgstr "To"
+#: templates/audit.html:17 templates/index.html:94
+msgid "TT.MM.JJJJ – TT.MM.JJJJ"
+msgstr ""
 
-#: templates/audit.html:22 templates/index.html:121
+#: templates/audit.html:23 templates/index.html:102
 msgid "Filtern"
 msgstr "Filter"
 
-#: templates/audit.html:30
+#: templates/audit.html:26 templates/index.html:105
+msgid "Zurücksetzen"
+msgstr "Reset"
+
+#: templates/audit.html:37
 msgid "Zeitpunkt"
 msgstr "Timestamp"
 
-#: templates/audit.html:31
+#: templates/audit.html:38
 msgid "User"
 msgstr "User"
 
-#: templates/audit.html:32
+#: templates/audit.html:39
 msgid "Aktion"
 msgstr "Action"
 
-#: templates/audit.html:33
+#: templates/audit.html:40
 msgid "Entry-ID"
 msgstr "Entry-ID"
 
-#: templates/audit.html:34
+#: templates/audit.html:41
 msgid "Details"
 msgstr "Details"
 
-#: templates/audit.html:48
+#: templates/audit.html:55
 msgid "Keine Einträge."
 msgstr "No Entries."
 
-#: templates/base.html:5 templates/base.html:34
-msgid "BottleBalance"
-msgstr "Welcome"
-
-#: templates/base.html:5
+#: templates/base.html:5 templates/base.html:203 templates/base.html:207
+#: templates/base.html:213
 msgid "BottleBalanceTitle"
 msgstr "JFApp"
 
-#: templates/base.html:48
-msgid "Dashboard"
-msgstr "Dashboard"
+#: templates/base.html:47 templates/index.html:74
+msgid "Dienste"
+msgstr ""
 
-#: templates/base.html:53
-msgid "Benutzer"
-msgstr "User"
+#: templates/base.html:52
+msgid "Mitglieder"
+msgstr ""
 
-#: templates/base.html:59
+#: templates/base.html:58
 msgid "Audit"
 msgstr "Audit"
 
-#: templates/base.html:64 templates/profile.html:7
+#: templates/base.html:63 templates/profile.html:7
 msgid "Profil"
 msgstr "Profil"
 
-#: templates/base.html:76
+#: templates/base.html:71
+#, fuzzy
+msgid "Antrag stellen"
+msgstr "Representation"
+
+#: templates/base.html:78 templates/base.html:203
+msgid "Über"
+msgstr ""
+
+#: templates/base.html:84
 msgid "Logout"
 msgstr "Logout"
 
-#: templates/base.html:90
+#: templates/base.html:98
 msgid "Admin-Passwort noch nicht geändert."
 msgstr "Admin password not yet changed."
 
-#: templates/base.html:91
+#: templates/base.html:99
 msgid "Bitte im Profil aktualisieren."
 msgstr "Please update your profile."
 
-#: templates/edit.html:7
+#: templates/base.html:207
+#, fuzzy
+msgid "Name:"
+msgstr "Revenue"
+
+#: templates/base.html:208
+msgid "Version:"
+msgstr ""
+
+#: templates/base.html:209
+msgid "Entwickler:"
+msgstr ""
+
+#: templates/base.html:210
+msgid "Kontakt:"
+msgstr ""
+
+#: templates/base.html:210
+#, fuzzy
+msgid "Entwickler kontaktieren"
+msgstr "Contact support"
+
+#: templates/base.html:211
+msgid "Webseite:"
+msgstr ""
+
+#: templates/base.html:213
+msgid ""
+" ist eine Webanwendung zur Verwaltung von Anwesenheiten für Dienste. Für "
+"Support oder Feedback wenden Sie sich bitte an den Entwickler."
+msgstr ""
+
+#: templates/edit.html:16
 msgid "Datensatz bearbeiten"
 msgstr "Edit entry"
 
-#: templates/edit.html:99 templates/index.html:84
-msgid "Notiz"
-msgstr "Note"
+#: templates/edit.html:28 templates/edit.html:30 templates/index.html:27
+#: templates/index.html:30 templates/index.html:119
+msgid "Titel"
+msgstr ""
 
-#: templates/edit.html:105 templates/import_preview.html:152
+#: templates/edit.html:163 templates/import_preview.html:152
 #: templates/profile.html:26 templates/reset.html:23
 msgid "Abbrechen"
 msgstr "Cancel"
-
-#: templates/edit.html:106 templates/profile.html:27 templates/profile.html:97
-#: templates/reset.html:24 templates/users.html:56
-msgid "Speichern"
-msgstr "Save"
 
 #: templates/import_preview.html:4
 msgid "CSV-Import – Vorschau"
@@ -523,107 +663,84 @@ msgstr "Import lines with errors (not recommended)"
 msgid "Import jetzt durchführen"
 msgstr "Import now"
 
-#: templates/index.html:11
-msgid "Inventar:"
-msgstr "Inventory:"
-
 #: templates/index.html:12
-msgid "Fl."
-msgstr "Btl."
-
-#: templates/index.html:26
-msgid "Kasse:"
-msgstr "Cash:"
-
-#: templates/index.html:43
-msgid "Neuen Datensatz hinzufügen"
+#, fuzzy
+msgid "Neuen Dienst hinzufügen"
 msgstr "Add new entry"
 
-#: templates/index.html:88
+#: templates/index.html:45 templates/index.html:121
+msgid "Gruppe"
+msgstr ""
+
+#: templates/index.html:60
 msgid "Hinzufügen"
 msgstr "Add"
 
-#: templates/index.html:101
-msgid "Einträge"
-msgstr "Entries"
+#: templates/index.html:78
+msgid "Filter für Dienste"
+msgstr ""
 
-#: templates/index.html:108
-msgid "Datum/Bemerkung"
-msgstr "Date/Comment"
+#: templates/index.html:85
+#, fuzzy
+msgid "Datum/Titel"
+msgstr "Date missing"
 
-#: templates/index.html:124
-msgid "Zurücksetzen"
-msgstr "Reset"
-
-#: templates/index.html:147
-msgid "CSV Import"
-msgstr "CSV Import"
-
-#: templates/index.html:153 templates/index.html:250
-msgid "CSV-Datei auswählen"
-msgstr "Please select a CSV file."
-
-#: templates/index.html:157 templates/index.html:253
-msgid "Erwartete Header:"
-msgstr "Expected headers:"
-
-#: templates/index.html:158 templates/index.html:254
-msgid "oder Kurzform ohne Inventar/Kassenbestand."
-msgstr "or short form without inventory/cash balance."
-
-#: templates/index.html:165 templates/index.html:260
-msgid "Bestehende Einträge komplett ersetzen"
-msgstr "Replace existing entries completely"
-
-#: templates/index.html:170 templates/index.html:266
-msgid "Vorschau anzeigen"
-msgstr "Show preview"
-
-#: templates/index.html:174 templates/index.html:265
-msgid "Beispiel-CSV herunterladen"
-msgstr "Download sample CSV file"
-
-#: templates/index.html:202 templates/users.html:42
+#: templates/index.html:125 templates/users.html:107
 msgid "Aktionen"
 msgstr "Actions"
 
-#: templates/index.html:217
+#: templates/index.html:142
 msgid "Bearbeiten"
 msgstr "Edit entry"
 
-#: templates/index.html:221
-msgid "Dienst wirklich löschen?"
+#: templates/index.html:148
+#, fuzzy
+msgid "Eintrag wirklich löschen?"
 msgstr "Are you sure you want to delete this entry?"
 
-#: templates/index.html:223 templates/users.html:81
+#: templates/index.html:150 templates/index.html:522
 msgid "Löschen"
 msgstr "Delete"
 
-#: templates/index.html:230
+#: templates/index.html:158
 msgid "Keine Einträge vorhanden."
 msgstr "No entries available."
 
-#: templates/index.html:245
-msgid "CSV-Datei importieren"
-msgstr "CSV-Datei importieren"
-
-#: templates/index.html:246
-msgid "Schließen"
-msgstr "Close"
-
-#: templates/index.html:308
+#: templates/index.html:222
 msgid "Flaschen"
 msgstr "Bottles"
+
+#: templates/index.html:357
+msgid "Bitte das Dienst-Formular vollständig ausfüllen."
+msgstr ""
+
+#: templates/index.html:384
+msgid "Bitte Titel oder Bemerkung ausfüllen."
+msgstr ""
+
+#: templates/index.html:431 templates/index.html:507
+#, fuzzy
+msgid "Keine Anhänge vorhanden."
+msgstr "No entries available."
+
+#: templates/index.html:461 templates/index.html:521
+msgid "Öffnen"
+msgstr ""
+
+#: templates/index.html:525
+#, fuzzy
+msgid "Anhang wirklich löschen?"
+msgstr "Are you sure you want to delete this entry?"
 
 #: templates/login.html:8
 msgid "Anmeldung"
 msgstr "Login"
 
-#: templates/login.html:34 templates/users.html:11 templates/users.html:37
+#: templates/login.html:34
 msgid "Benutzername"
 msgstr "Username"
 
-#: templates/login.html:38 templates/users.html:25
+#: templates/login.html:38 templates/users.html:44
 msgid "Passwort"
 msgstr "Password"
 
@@ -631,11 +748,23 @@ msgstr "Password"
 msgid "Login"
 msgstr "Login"
 
+#: templates/payment_authorization_detail.html:119
+msgid "Hochladen"
+msgstr ""
+
+#: templates/payment_authorization_detail.html:123
+msgid "Zulässige Formate:"
+msgstr ""
+
+#: templates/payment_authorization_detail.html:123
+msgid "Mehrere Dateien möglich."
+msgstr ""
+
 #: templates/profile.html:11
 msgid "E-Mail (für Passwort-Reset)"
 msgstr "Email (for password reset)"
 
-#: templates/profile.html:16 templates/reset.html:15 templates/users.html:72
+#: templates/profile.html:16 templates/reset.html:15
 msgid "Neues Passwort"
 msgstr "New password"
 
@@ -707,76 +836,144 @@ msgstr "Dark"
 msgid "Passwort zurücksetzen"
 msgstr "Reset password"
 
-#: templates/users.html:6
-msgid "Benutzerverwaltung"
+#: templates/users.html:5
+#, fuzzy
+msgid "Mitgliederverwaltung"
 msgstr "User management"
 
-#: templates/users.html:15 templates/users.html:38
+#: templates/users.html:11
+#, fuzzy
+msgid "Username"
+msgstr "Username"
+
+#: templates/users.html:15
+msgid "Displayname"
+msgstr ""
+
+#: templates/users.html:19 templates/users.html:101
 msgid "E-Mail"
 msgstr "E-Mail"
 
-#: templates/users.html:19 templates/users.html:39
+#: templates/users.html:23 templates/users.html:102
 msgid "Rolle"
 msgstr "Role"
 
-#: templates/users.html:29
+#: templates/users.html:29 templates/users.html:100
+#, fuzzy
+msgid "Löscheinheit"
+msgstr "Delete"
+
+#: templates/users.html:49
 msgid "Anlegen"
 msgstr "Create"
 
-#: templates/users.html:40
+#: templates/users.html:99
+msgid "Mitglied"
+msgstr ""
+
+#: templates/users.html:103
 msgid "Aktiv"
 msgstr "Active"
 
-#: templates/users.html:41
+#: templates/users.html:104
+msgid "Jugendwart"
+msgstr ""
+
+#: templates/users.html:105
+#, fuzzy
+msgid "Betreuer"
+msgstr "User"
+
+#: templates/users.html:106
 msgid "Erstellt"
 msgstr "Created"
 
-#: templates/users.html:63
-msgid "Aktivieren"
-msgstr "Activate"
-
-#: templates/users.html:63
+#: templates/users.html:152 templates/users.html:166 templates/users.html:167
 msgid "Deaktivieren"
 msgstr "Deactivate"
 
-#: templates/users.html:73
-msgid "Passwort setzen"
-msgstr "Reset password"
+#: templates/users.html:156
+#, fuzzy
+msgid "Du kannst dich nicht selbst aktivieren/deaktivieren."
+msgstr "You cannot delete yourself."
 
-#: templates/users.html:77
-msgid "Reset-Link"
-msgstr "Reset-Link"
+#: templates/users.html:157 templates/users.html:170 templates/users.html:171
+msgid "Aktivieren"
+msgstr "Activate"
 
-#: templates/users.html:87
-msgid "Keine Benutzer vorhanden"
+#: templates/users.html:182 templates/users.html:199
+msgid "Berechtigung entfernen"
+msgstr ""
+
+#: templates/users.html:183 templates/users.html:200
+msgid "Ja"
+msgstr ""
+
+#: templates/users.html:186 templates/users.html:203
+msgid "Berechtigung vergeben"
+msgstr ""
+
+#: templates/users.html:187 templates/users.html:204
+#, fuzzy
+msgid "Nein"
+msgstr "none"
+
+#: templates/users.html:222
+#, fuzzy
+msgid "Reset-Link generieren"
+msgstr "Reset link sent by email."
+
+#: templates/users.html:229
+#, fuzzy
+msgid "Mitglied bearbeiten"
+msgstr "Edit entry"
+
+#: templates/users.html:235
+#, fuzzy
+msgid "Mitglied wirklich löschen?"
+msgstr "Are you sure you want to delete this entry?"
+
+#: templates/users.html:237
+#, fuzzy
+msgid "Mitglied löschen"
+msgstr "Delete"
+
+#: templates/users.html:247
+#, fuzzy
+msgid "Keine Mitglied vorhanden"
 msgstr "No entries available."
 
 #: templates/errors/401.html:2 templates/errors/401.html:9
 msgid "Nicht autorisiert"
 msgstr "Not authorised"
 
-#: templates/errors/401.html:12 templates/errors/403.html:13
-#: templates/errors/404.html:13 templates/errors/500.html:13
-msgid "Du musst angemeldet sein, um diese Seite zu sehen."
-msgstr "You must be logged in to view this page."
+#: templates/errors/401.html:12
+msgid "Du bist nicht authorisiert diesen Bereich zu sehen"
+msgstr ""
 
 #: templates/errors/401.html:16 templates/errors/403.html:17
 #: templates/errors/404.html:17 templates/errors/500.html:17
 msgid "Zur Startseite"
 msgstr "To the home page"
 
-#: templates/errors/401.html:21 templates/errors/403.html:22
-#: templates/errors/404.html:22 templates/errors/500.html:22
+#: templates/errors/401.html:20 templates/errors/403.html:21
+#: templates/errors/404.html:21 templates/errors/500.html:21
 msgid "Zum Support-Portal"
 msgstr "To the support portal"
 
-#: templates/errors/401.html:26 templates/errors/403.html:27
-#: templates/errors/404.html:27 templates/errors/500.html:27
+#: templates/errors/401.html:25 templates/errors/403.html:26
+#: templates/errors/404.html:26 templates/errors/500.html:26
 msgid "Support kontaktieren"
 msgstr "Contact support"
 
-#: templates/errors/401.html:33 templates/errors/403.html:34
-#: templates/errors/404.html:34 templates/errors/500.html:34
+#: templates/errors/401.html:31 templates/errors/403.html:32
+#: templates/errors/404.html:32 templates/errors/500.html:32
+#, fuzzy
+msgid "Zum Login"
+msgstr "Login"
+
+#: templates/errors/401.html:38 templates/errors/403.html:39
+#: templates/errors/404.html:39 templates/errors/500.html:39
 msgid "Referenz"
 msgstr "Reference"
 
@@ -784,12 +981,26 @@ msgstr "Reference"
 msgid "Zugriff verweigert"
 msgstr "Access denied"
 
+#: templates/errors/403.html:13
+msgid "Der Zugriff auf diesen Bereich wurde verweigert"
+msgstr ""
+
 #: templates/errors/404.html:2 templates/errors/404.html:9
 msgid "Seite nicht gefunden"
 msgstr "Entry not found"
 
+#: templates/errors/404.html:13
+#, fuzzy
+msgid "Die angeforderte Seite wurde nicht gefunden"
+msgstr "Entry not found."
+
 #: templates/errors/500.html:2 templates/errors/500.html:9
 msgid "Unerwarteter Fehler"
+msgstr "Unexpected error"
+
+#: templates/errors/500.html:13
+#, fuzzy
+msgid "Ein unerwarteter Fehler ist aufgetreten"
 msgstr "Unexpected error"
 
 #~ msgid "BottleBalance – Export"
@@ -854,4 +1065,82 @@ msgstr "Unexpected error"
 
 #~ msgid "Neue Backup-Codes generieren"
 #~ msgstr "Generate new backup codes"
+
+#~ msgid "Passwort muss mindestens 8 Zeichen haben."
+#~ msgstr "Password must be at least 8 characters long."
+
+#~ msgid ""
+#~ "Bitte aktiviere die Zwei-Faktor-"
+#~ "Authentifizierung (2FA), um dein Konto "
+#~ "zusätzlich zu schützen."
+#~ msgstr ""
+#~ "Please activate two-factor authentication "
+#~ "(2FA) to provide additional protection "
+#~ "for your account."
+
+#~ msgid "Neues Passwort muss mindestens 8 Zeichen haben."
+#~ msgstr "New password must be at least 8 characters long."
+
+#~ msgid "Von"
+#~ msgstr "From"
+
+#~ msgid "Bis"
+#~ msgstr "To"
+
+#~ msgid "BottleBalance"
+#~ msgstr "Welcome"
+
+#~ msgid "Dashboard"
+#~ msgstr "Dashboard"
+
+#~ msgid "Notiz"
+#~ msgstr "Note"
+
+#~ msgid "Inventar:"
+#~ msgstr "Inventory:"
+
+#~ msgid "Fl."
+#~ msgstr "Btl."
+
+#~ msgid "Kasse:"
+#~ msgstr "Cash:"
+
+#~ msgid "Einträge"
+#~ msgstr "Entries"
+
+#~ msgid "Datum/Bemerkung"
+#~ msgstr "Date/Comment"
+
+#~ msgid "CSV Import"
+#~ msgstr "CSV Import"
+
+#~ msgid "CSV-Datei auswählen"
+#~ msgstr "Please select a CSV file."
+
+#~ msgid "Erwartete Header:"
+#~ msgstr "Expected headers:"
+
+#~ msgid "oder Kurzform ohne Inventar/Kassenbestand."
+#~ msgstr "or short form without inventory/cash balance."
+
+#~ msgid "Bestehende Einträge komplett ersetzen"
+#~ msgstr "Replace existing entries completely"
+
+#~ msgid "Vorschau anzeigen"
+#~ msgstr "Show preview"
+
+#~ msgid "Beispiel-CSV herunterladen"
+#~ msgstr "Download sample CSV file"
+
+#~ msgid "CSV-Datei importieren"
+#~ msgstr "CSV-Datei importieren"
+
+#~ msgid "Passwort setzen"
+#~ msgstr "Reset password"
+
+#~ msgid "Reset-Link"
+#~ msgstr "Reset-Link"
+
+#~ msgid "Du musst angemeldet sein, um diese Seite zu sehen."
+#~ msgstr "You must be logged in to view this page."
 
