@@ -294,8 +294,8 @@ CREATE TABLE IF NOT EXISTS entries (
 CREATE_TABLE_USERS = """
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    displayname TEXT NOT NULL,
-    username TEXT UNIQUE NOT NULL,
+    displayname TEXT UNIQUE NOT NULL,
+    username TEXT UNIQUE,
     email TEXT,
     password_hash TEXT,
     role TEXT,

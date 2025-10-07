@@ -62,6 +62,9 @@ def users_add():
     unit = (request.form.get('unit') or '').strip()
     role = (request.form.get('role') or 'Admin').strip()
     pwd = (request.form.get('password') or '').strip()
+    #if not username:
+    #    flash(_('Benutzername darf nicht leer sein.'))
+    #    return redirect(url_for('user_routes.users_list'))
     if not displayname:
         flash(_('Displayname darf nicht leer sein.'))
         return redirect(url_for('user_routes.users_list'))
@@ -86,7 +89,8 @@ def users_add():
             })
         flash(_('Benutzer angelegt.'))
     except Exception as e:
-        flash(f"{_('Fehler:')} {e}")
+        #flash(f"{_('Fehler:')} {e}")
+        flash(f"{_('Fehler beim Anlegen des Mitglieds. Username muss entweder leer sein oder darf nicht doppelt vorkommen. Displayname darf nicht doppelt vorkommen und muss gefüllt sein.')}", 'danger')
     return redirect(url_for('user_routes.users_list'))
 
 @user_routes.route('/admin/users/<int:uid>/edit', methods=['GET', 'POST'])
